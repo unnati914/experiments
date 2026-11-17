@@ -1,0 +1,13 @@
+{
+  "name": "eval-poc-kit",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "run": "node run.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "zod": "^3.25.0"
+  }
+}

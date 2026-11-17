@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof Check</title>
+<meta name="description" content="A demo for Pramaana Labs by Unnati Chhabra: a tiny proof-style checker for Indian tax rules that shows every step, asks when a fact is missing, and refuses when it can't prove the answer. Plus 16 test cases, features I'd build, and the hard parts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f2ea; --grid:rgba(29,42,68,.05); --card:#fffdf8; --ink:#1d2a44; --soft:#5f6779; --line:#e3ddd0;
+  --amber:#c9892a; --amber-bg:#f8ecd6; --teal:#2f7f6f; --teal-bg:#dcefe9; --red:#b5483f; --red-bg:#f6e0dc;
+  --blue:#3d5f9e; --blue-bg:#e2e9f5; --shadow:0 6px 24px rgba(29,42,68,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a26; --grid:rgba(255,255,255,.035); --card:#1c2433; --ink:#e9ecf3; --soft:#a3abbd; --line:#2d3747;
+    --amber:#e3a94d; --amber-bg:#3a2f1c; --teal:#5cc0aa; --teal-bg:#1d3631; --red:#e5847a; --red-bg:#3d2422;
+    --blue:#8fb0ee; --blue-bg:#22304a; --shadow:0 6px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a26; --grid:rgba(255,255,255,.035); --card:#1c2433; --ink:#e9ecf3; --soft:#a3abbd; --line:#2d3747;
+  --amber:#e3a94d; --amber-bg:#3a2f1c; --teal:#5cc0aa; --teal-bg:#1d3631; --red:#e5847a; --red-bg:#3d2422;
+  --blue:#8fb0ee; --blue-bg:#22304a; --shadow:0 6px 24px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.55;
+  background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.wrap{max-width:1140px;margin:0 auto;padding:28px 16px 60px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--amber);text-transform:uppercase}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:6px 0 12px}
+h1 em{font-style:normal;color:var(--teal)}
+.lede{max-width:780px;color:var(--soft);font-size:17px;margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.tag{font-size:13px;padding:4px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--soft)}
+.tag b{color:var(--ink)}
+nav{display:flex;gap:6px;margin:28px 0 20px;overflow-x:auto;padding-bottom:4px}
+nav button{font:inherit;font-weight:600;border:0;background:transparent;color:var(--soft);padding:9px 16px;border-radius:10px;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--ink);color:var(--bg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:.85fr 1.15fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:880px){.g2,.g3,.g4{grid-template-columns:1fr}}
+h2{font-size:24px;margin:0 0 6px}
+h3{font-size:16px;margin:0 0 4px}
+.small{font-size:14px;color:var(--soft)}
+.qlist{display:grid;gap:8px}
+.qlist button{font:inherit;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px 12px;cursor:pointer}
+.qlist button small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+.qlist button.on{border-color:var(--ink);background:var(--card);box-shadow:var(--shadow)}
+.ask{background:var(--blue-bg);border-radius:12px;padding:12px 14px;font-weight:600}
+.ask small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--blue)}
+.bot{margin-top:12px;background:var(--red-bg);border-radius:12px;padding:12px 14px}
+.bot small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--red)}
+.verdict{margin-top:14px;border:2px solid var(--line);border-radius:14px;padding:16px}
+.verdict.proved{border-color:var(--teal)} .verdict.ask{border-color:var(--blue)} .verdict.refused{border-color:var(--amber)}
+.stamp{display:inline-block;font-family:"JetBrains Mono",monospace;font-weight:600;font-size:12px;letter-spacing:.12em;padding:3px 10px;border-radius:6px;border:1.5px solid currentColor}
+.proved .stamp{color:var(--teal)} .ask .stamp{color:var(--blue)} .refused .stamp{color:var(--amber)}
+.value{font-family:Fraunces,Georgia,serif;font-size:40px;font-weight:700;margin:6px 0 2px}
+.steps{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px;counter-reset:st}
+.steps li{display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14px;padding:8px 10px;background:var(--bg);border-radius:10px;animation:in .3s ease both}
+.steps li::before{counter-increment:st;content:counter(st);font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--soft);padding-top:1px}
+.steps .rule{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:11px;padding:1px 7px;border-radius:5px;background:var(--teal-bg);color:var(--teal);margin-right:6px;cursor:help}
+.steps .why{display:block;font-size:12px;color:var(--soft);margin-top:2px}
+@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.steps li{animation:none}}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+form.own{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+form.own label{font-size:13px;color:var(--soft);display:grid;gap:4px}
+form.own input,form.own select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%}
+form.own .full{grid-column:1/-1}
+details{margin-top:16px} summary{cursor:pointer;font-weight:700}
+.stats .big{font-family:Fraunces,Georgia,serif;font-size:36px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.tablewrap{overflow-x:auto}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.pass{background:var(--teal-bg);color:var(--teal)} .pill.fail{background:var(--red-bg);color:var(--red)}
+.pill.k{background:var(--amber-bg);color:var(--amber)}
+.feat .n{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--amber);font-weight:600}
+.ch{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.ch>div{padding:16px}
+.ch .prob{background:var(--red-bg)} .ch .fix{background:var(--teal-bg)}
+.ch small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.ch .prob small{color:var(--red)} .ch .fix small{color:var(--teal)}
+@media (max-width:700px){.ch{grid-template-columns:1fr}}
+pre{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.55;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;margin:10px 0 0}
+pre .c{color:var(--soft)} pre .k{color:var(--blue);font-weight:600}
+.src a,footer a{color:var(--soft)}
+footer{margin-top:40px;color:var(--soft);font-size:13px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">A demo for Pramaana Labs · by Unnati Chhabra</div>
+  <h1>Proof Check: <em>show the proof</em>, or ask, or say no.</h1>
+  <p class="lede">A tiny version of the idea, built on Indian tax rules. Every answer is built step by step from written rules. If one missing fact could change the answer, it asks for that fact. If the question is outside its rules, it refuses instead of guessing.</p>
+  <div class="tags">
+    <span class="tag"><b>Real rules:</b> FY 2025-26 income tax (80C, 80D, 87A, slabs)</span>
+    <span class="tag">Runs in your browser, no AI calls</span>
+    <span class="tag">16 test cases, all public</span>
+    <span class="tag">Not tax advice</span>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button class="on" data-tab="demo">Live demo</button>
+  <button data-tab="suite">Test suite</button>
+  <button data-tab="build">Underrated features</button>
+  <button data-tab="hard">The hard parts</button>
+  <button data-tab="me">About me</button>
+</nav>
+
+<!-- LIVE DEMO -->
+<section id="demo">
+  <div class="grid g2">
+    <div class="card">
+      <h2>Pick a question</h2>
+      <p class="small">Each one hides a trap that plain chatbots often fall into.</p>
+      <div class="qlist" id="qlist"></div>
+      <details id="ownBox">
+        <summary>Or try your own numbers</summary>
+        <form class="own" id="own">
+          <label>Question<select name="ask"><option value="tax">How much tax?</option><option value="80C">How much 80C?</option><option value="80D">How much 80D?</option></select></label>
+          <label>Regime<select name="regime"><option value="">Not sure</option><option value="new">New</option><option value="old">Old</option></select></label>
+          <label>Your age<input name="age" inputmode="numeric" placeholder="leave blank if unsure"></label>
+          <label>Salary (₹ a year)<input name="salary" inputmode="numeric" value="1285000"></label>
+          <label>80C invested (₹)<input name="inv80C" inputmode="numeric" value="0"></label>
+          <label>Health insurance, you (₹)<input name="premiumSelf" inputmode="numeric" value="0"></label>
+          <label>Health check-ups (₹)<input name="checkup" inputmode="numeric" value="0"></label>
+          <label>Health insurance, parents (₹)<input name="premiumParents" inputmode="numeric" value="0"></label>
+          <label>Parent 60+?<select name="parentsSenior"><option value="">Not sure</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+          <label>Premium paid in cash?<select name="premiumCash"><option value="no">No</option><option value="yes">Yes</option></select></label>
+          <div class="full"><button class="btn" type="submit">Check it</button></div>
+        </form>
+      </details>
+    </div>
+    <div class="card" id="out" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- TEST SUITE -->
+<section id="suite" class="hidden">
+  <div class="grid g4 stats" style="margin-bottom:16px">
+    <div class="card"><div class="big" id="sPass">–</div><p class="small">cases pass against hand-worked answers</p></div>
+    <div class="card"><div class="big" id="sAsk">–</div><p class="small">cases where it asks one question instead of guessing</p></div>
+    <div class="card"><div class="big" id="sRef">–</div><p class="small">cases where the right move is to refuse</p></div>
+    <div class="card"><div class="big">0</div><p class="small">AI calls: every step is a written rule</p></div>
+  </div>
+  <div class="card">
+    <h2>16 test cases for a rules-to-answer system</h2>
+    <p class="small">Built around the corner cases a verification product has to survive: limits, exceptions, rules that clash, missing facts, broken input, hidden instructions and rule versions. The "common chatbot mistake" column shows typical failure patterns, written by me to explain each trap, not a recorded model run.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>#</th><th>Trap</th><th>Question</th><th>Right answer</th><th>Proof Check</th><th>Common chatbot mistake</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- WHAT I'D BUILD -->
+<section id="build" class="hidden">
+  <div class="grid g3">
+    <div class="card feat"><div class="n">01 · ASK, DON'T REFUSE</div><h3>Find the one missing fact</h3><p class="small">When a proof fails only because a fact is missing, try every value of that fact. If the answer doesn't change, answer anyway. If it does, ask just that one question. Fewer refusals, same rigour. (Working in the demo: try the 80D questions.)</p></div>
+    <div class="card feat"><div class="n">02 · "WHY NOT?"</div><h3>Counterexamples people can read</h3><p class="small">When a claim is false, show the smallest change that would make it true: "You'd get the full ₹50,000 only if you or your spouse were 60+." A refusal becomes something the user can act on.</p></div>
+    <div class="card feat"><div class="n">03 · LAW-CHANGE REPORT</div><h3>See what a new rule breaks</h3><p class="small">Give every rule an effective date. On Budget day, re-run all saved questions on the old and the new rules and list the answers that change, before customers find out.</p></div>
+    <div class="card feat"><div class="n">04 · PROOF RECEIPT</div><h3>A proof a CA can sign</h3><p class="small">Turn the formal proof into a one-page receipt in plain English, each step linked to the exact rule text. Auditors and CAs check the receipt, not the Lean code.</p></div>
+    <div class="card feat"><div class="n">05 · BOUNDARY TESTS</div><h3>Tests written from the rules</h3><p class="small">For every number in a rule, generate tests at limit −1, limit and limit +1, and one test per exception. Run them before any rule change ships. Most of the 16 cases here came from this pattern.</p></div>
+    <div class="card feat"><div class="n">06 · INSTRUCTION FIREWALL</div><h3>Documents are facts, not orders</h3><p class="small">Parse uploads into typed facts before the prover sees them. Any instruction found in a document is logged and ignored. Case 14 tests this.</p></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>One rule as Lean 4</h2>
+    <p class="small">A sketch of how the 80C rule could be written so a machine can check it. Not run on this page.</p>
+<pre><span class="c">-- Section 80C, FY 2025-26: capped at ₹1,50,000, and zero in the new regime</span>
+<span class="k">def</span> cap80C : Nat := 150000
+
+<span class="k">def</span> deduction80C (invested : Nat) (newRegime : Bool) : Nat :=
+  <span class="k">if</span> newRegime <span class="k">then</span> 0 <span class="k">else</span> min invested cap80C
+
+<span class="k">theorem</span> deduction80C_le_cap (x : Nat) (b : Bool) :
+    deduction80C x b ≤ cap80C := <span class="k">by</span>
+  unfold deduction80C
+  split
+  · exact Nat.zero_le _
+  · exact Nat.min_le_right _ _</pre>
+  </div>
+</section>
+
+<!-- HARD PARTS -->
+<section id="hard" class="hidden">
+  <p class="small" style="margin-top:0">My guesses from public information about the approach, not inside knowledge.</p>
+  <div class="grid" style="gap:12px">
+    <div class="ch"><div class="prob"><small>Challenge</small><h3>"Proved", but the rule was written wrong</h3><p class="small">A proof is only as good as the formal rule. If the model that turns law into Lean misreads one exception, every answer built on it is confidently wrong.</p></div><div class="fix"><small>How I'd solve it</small><h3>Test the rules, not just the answers</h3><p class="small">Boundary tests generated from each rule; two independent formalisations of the same rule compared on thousands of inputs; any disagreement goes to a tax or legal expert.</p></div></div>
+    <div class="ch"><div class="prob"><small>Challenge</small><h3>Laws change and clash</h3><p class="small">Budgets change limits every year. India's new Income-tax Act renumbered sections from April 2026 (80C became s.123). Circulars and court rulings add more.</p></div><div class="fix"><small>How I'd solve it</small><h3>Versioned rules with dates</h3><p class="small">Every rule carries "valid from / until". Questions are answered on the right version, the law-change report shows what moved, and the checker refuses when no version covers the date (case 16).</p></div></div>
+    <div class="ch"><div class="prob"><small>Challenge</small><h3>Too many "I can't prove that"</h3><p class="small">A system that refuses often is safe but users drift back to chatbots that always answer.</p></div><div class="fix"><small>How I'd solve it</small><h3>Measure refusals like errors</h3><p class="small">Track refusal rate next to accuracy on every release. Turn refusals into one clear question where possible (cases 5 and 7), and answer when the missing fact can't change the result (case 8).</p></div></div>
+    <div class="ch"><div class="prob"><small>Challenge</small><h3>Messy and hostile input</h3><p class="small">Scanned forms, wrong numbers, negative amounts, and documents with hidden instructions aimed at the AI.</p></div><div class="fix"><small>How I'd solve it</small><h3>Typed facts before the prover</h3><p class="small">Validate every value, reject what doesn't parse (case 15), and never take instructions from a document (case 14). Keep an attack test set that grows with every incident.</p></div></div>
+    <div class="ch"><div class="prob"><small>Challenge</small><h3>People can't read Lean</h3><p class="small">A machine-checked proof doesn't build trust if the user, the CA or the regulator can't follow it.</p></div><div class="fix"><small>How I'd solve it</small><h3>Plain-English proof receipts</h3><p class="small">Each step in one sentence, with the rule it used, like the steps in this demo. Exportable for audits.</p></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="me" class="hidden">
+  <div class="grid g2">
+    <div class="card">
+      <h2>About me</h2>
+      <p>I'm Unnati, an AI and backend engineer. At <b>Zomato</b> I built a GenAI bot evaluation framework, Parchi Orders for HyperPure (about 70% of GMV) and in-house invoice OCR. At <b>Paysecure</b> I built payment integrations for 40 merchants. At <b>Grid Dynamics</b> I built GenAI agents for VISA.</p>
+      <p>The part I enjoy most is turning a fuzzy "the AI seems right" into tests that say exactly when it is and isn't. That's why the <b>Software Engineer, Product</b> role caught my eye: making verified AI answers something people can read, question and trust.</p>
+      <p class="small"><a href="https://www.unnati-chhabra.xyz">unnati-chhabra.xyz</a> · <a href="https://github.com/unnati914">github.com/unnati914</a> · <a href="https://unnati-pocs.vercel.app">more eval demos</a></p>
+    </div>
+    <div class="card">
+      <h2>How I'd start</h2>
+      <p class="small"><b>Weeks 1–2.</b> Ship one small fix end to end. Sit in on customer calls to see where people get stuck reading answers and proofs.</p>
+      <p class="small"><b>Weeks 3–6.</b> Build the proof receipt view: each step in plain English, linked to the rule text, exportable for a CA or auditor.</p>
+      <p class="small"><b>Weeks 7–12.</b> Add the ask-one-question flow and the law-change report to the API, with tests, usage tracking and clear loading and error states.</p>
+      <p class="small src">About Pramaana: <a href="https://jobs.ashbyhq.com/pramaana-labs">jobs page</a> · <a href="https://inc42.com/buzz/pramaana-labs-raises-27-mn-to-build-ai-verification-layer/">Inc42</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>Proof Check is a demo I built on my own to show the idea. It covers a small slice of FY 2025-26 rules and is not tax advice. It isn't affiliated with or endorsed by Pramaana Labs.</footer>
+</div>
+
+<script src="engine.js"></script>
+<script src="cases.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const { check, RULES, fmt } = ProofCheck;
+const FEATURED = [1, 6, 7, 11, 13, 15];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const OPTION_LABELS = {
+  regime: [['Old regime', 'old'], ['New regime', 'new']],
+  age: [['Under 60', 35], ['60 to 79', 65], ['80 or more', 85]],
+  parentsSenior: [['Yes, 60+', true], ['No', false]],
+};
+
+function render(q, facts, ask, mistake) {
+  const r = check(facts, ask);
+  const stamp = { proved: 'PROVED', ask: 'NEEDS ONE FACT', refused: 'REFUSED' }[r.status];
+  let body = '';
+  if (r.status === 'proved') body = `<div class="value">${fmt(r.value)}</div><div class="small">${ask === 'tax' ? 'tax for the year' : ask + ' deduction'}</div>`;
+  if (r.status === 'ask') body = `<p style="margin:8px 0 0;font-weight:700">${esc(r.question)}</p><p class="small" style="margin:4px 0 0">${esc(r.reason)}</p><div class="opts">${OPTION_LABELS[r.fact].map(([l, v], i) => `<button class="btn ghost" data-i="${i}">${l}</button>`).join('')}</div>`;
+  if (r.status === 'refused') body = `<p style="margin:8px 0 0">${esc(r.reason)}</p>`;
+  const steps = r.steps.map(([id, t]) => `<li style="animation-delay:${0}ms"><div><span class="rule" title="${esc(RULES[id])}">${id}</span>${esc(t)}<span class="why">${esc(RULES[id])}</span></div></li>`).join('');
+  $('out').innerHTML = `
+    <div class="ask"><small>QUESTION</small>${esc(q)}</div>
+    ${mistake ? `<div class="bot"><small>A COMMON CHATBOT MISTAKE</small>${esc(mistake)}</div>` : ''}
+    <div class="verdict ${r.status}"><span class="stamp">${stamp}</span>${body}${steps ? `<ol class="steps">${steps}</ol>` : ''}</div>`;
+  $('out').querySelectorAll('.steps li').forEach((li, i) => li.style.animationDelay = (i * 90) + 'ms');
+  if (r.status === 'ask') $('out').querySelectorAll('.opts button').forEach((b) => b.onclick = () => {
+    const v = OPTION_LABELS[r.fact][+b.dataset.i][1];
+    render(q, { ...facts, [r.fact]: v }, ask, mistake);
+  });
+}
+
+function pick(n) {
+  document.querySelectorAll('#qlist button').forEach((b) => b.classList.toggle('on', +b.dataset.n === n));
+  const c = CASES[n];
+  render(c.q, c.facts, c.ask, c.mistake);
+}
+$('qlist').innerHTML = FEATURED.map((n) => `<button data-n="${n}"><small>${CASES[n].kind}</small>${esc(CASES[n].q)}</button>`).join('');
+document.querySelectorAll('#qlist button').forEach((b) => b.onclick = () => pick(+b.dataset.n));
+
+$('own').onsubmit = (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target), f = {};
+  const num = (k) => { const v = String(fd.get(k) || '').replace(/[,₹\s]/g, ''); if (v === '') return; f[k] = /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v; };
+  ['salary', 'inv80C', 'premiumSelf', 'checkup', 'premiumParents'].forEach(num);
+  const age = String(fd.get('age') || '').trim(); if (age) f.age = Number(age);
+  if (fd.get('regime')) f.regime = fd.get('regime');
+  if (fd.get('parentsSenior')) f.parentsSenior = fd.get('parentsSenior') === 'yes';
+  f.premiumCash = fd.get('premiumCash') === 'yes';
+  const ask = fd.get('ask');
+  document.querySelectorAll('#qlist button').forEach((b) => b.classList.remove('on'));
+  render({ tax: 'How much tax do I pay?', '80C': 'How much 80C can I claim?', '80D': 'How much 80D can I claim?' }[ask] + ' (your numbers)', f, ask, '');
+};
+
+// Test suite
+let pass = 0;
+$('rows').innerHTML = CASES.map((c, i) => {
+  const r = check(c.facts, c.ask), w = c.want;
+  const ok = r.status === w.status && (w.value === undefined || r.value === w.value) && (w.fact === undefined || r.fact === w.fact);
+  pass += ok;
+  const show = (x) => x.status === 'proved' ? fmt(x.value) : x.status === 'ask' ? `asks: ${x.fact}` : 'refuses';
+  return `<tr><td>${i + 1}</td><td><span class="pill k">${c.kind}</span></td><td>${esc(c.q)}</td><td><b>${show(w)}</b></td><td>${show(r)} <span class="pill ${ok ? 'pass' : 'fail'}">${ok ? 'pass' : 'fail'}</span></td><td class="small">${esc(c.mistake)}</td></tr>`;
+}).join('');
+$('sPass').textContent = pass + ' / ' + CASES.length;
+$('sAsk').textContent = CASES.filter((c) => c.want.status === 'ask').length;
+$('sRef').textContent = CASES.filter((c) => c.want.status === 'refused').length;
+
+// Tabs (also reachable by #hash for sharing)
+const TABS = ['demo', 'suite', 'build', 'hard', 'me'];
+function showTab(name) {
+  if (!TABS.includes(name)) name = 'demo';
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
+  TABS.forEach((id) => $(id).classList.toggle('hidden', id !== name));
+}
+document.querySelectorAll('#tabs button').forEach((b) => b.onclick = () => { showTab(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); });
+showTab(location.hash.slice(1));
+const qm = location.search.match(/q=(\d+)/);
+pick(qm && FEATURED.includes(+qm[1]) ? +qm[1] : 1);
+</script>
+</body>
+</html>

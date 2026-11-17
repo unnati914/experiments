@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SYAAT — Yoga as a way of life, since 1888</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&family=Tiro+Devanagari+Hindi&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #f8f4ec;
+    --paper: #fffdf8;
+    --sand: #efe7d9;
+    --ink: #241a13;
+    --muted: #76695b;
+    --gold: #a8823f;
+    --gold-soft: #d9c49a;
+    --line: #e3d8c4;
+    --night: #1f1712;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Jost', 'Noto Sans Devanagari', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--ivory); color: var(--ink); font: 17px/1.7 var(--sans); font-weight: 400; }
+  html[lang="hi"] body { font-family: 'Noto Sans Devanagari', var(--sans); }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  .wrap { width: min(1180px, 100% - 32px); margin-inline: auto; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.08; margin: 0; letter-spacing: -.005em; }
+  html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3 { font-family: 'Tiro Devanagari Hindi', var(--serif); line-height: 1.3; }
+  h2 { font-size: clamp(36px, 5vw, 56px); }
+  h2 em, h1 em { font-style: italic; color: var(--gold); }
+  .eyebrow { display: inline-flex; align-items: center; gap: 14px; font-size: 12px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px; }
+  .eyebrow::before { content: ""; width: 32px; height: 1px; background: var(--gold); }
+  .center { text-align: center; }
+  .center .eyebrow::after { content: ""; width: 32px; height: 1px; background: var(--gold); }
+  section { padding: 120px 0; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 34em; }
+
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 30px; border: 1px solid var(--ink); background: var(--ink); color: var(--ivory); font: 500 13px var(--sans); letter-spacing: .18em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background .2s, color .2s; }
+  .btn:hover { background: transparent; color: var(--ink); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--ivory); }
+  .link { font: 500 13px var(--sans); letter-spacing: .18em; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
+  .link:hover { color: var(--gold); }
+
+  .ornament { display: flex; align-items: center; justify-content: center; gap: 14px; color: var(--gold); margin: 28px 0; }
+  .ornament::before, .ornament::after { content: ""; width: 60px; height: 1px; background: var(--gold-soft); }
+
+  /* Header */
+  header { position: sticky; top: 0; z-index: 20; background: rgba(248,244,236,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; gap: 36px; height: 78px; }
+  .nav .logo img { height: 42px; width: auto; }
+  .nav ul { display: flex; gap: 34px; list-style: none; margin: 0 0 0 auto; padding: 0; font-size: 13px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+  .nav ul a { text-decoration: none; color: var(--muted); transition: color .2s; }
+  .nav ul a:hover { color: var(--ink); }
+  .lang { border: 0; border-left: 1px solid var(--line); background: none; padding: 4px 0 4px 24px; font: 500 15px 'Tiro Devanagari Hindi', var(--sans); color: var(--ink); cursor: pointer; }
+  .nav .btn { padding: 12px 22px; font-size: 12px; }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; min-height: min(calc(100vh - 78px), 900px); display: grid; place-items: center; padding: 80px 0 120px; background: transparent; }
+  /* Ramlal ji's outline stays behind the whole site while you scroll; light sections are see-through. */
+  .guru-outline { position: fixed; z-index: 0; left: 50%; bottom: 0; translate: -50% 0; height: min(94vh, 980px); width: auto; max-width: none; opacity: .15; pointer-events: none; }
+  header, main, footer { position: relative; z-index: 1; }
+  .hero .inner { position: relative; z-index: 1; text-align: center; max-width: 860px; padding: 0 20px; }
+  .hero h1 { font-size: clamp(56px, 9vw, 112px); line-height: .98; margin: 6px 0 0; }
+  .hero h1 em { display: block; }
+  .hero .lead { margin: 0 auto 44px; }
+  .hero .ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+  .hero .founder { position: absolute; z-index: 1; left: 0; right: 0; bottom: 36px; text-align: center; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--muted); }
+  .hero .founder span { font-family: var(--sans); font-style: normal; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 2px; }
+
+  /* Stats */
+  .stats { background: rgba(255,253,248,.55); border-block: 1px solid var(--line); padding: 44px 0; }
+  .stats .wrap { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+  .stats div + div { border-left: 1px solid var(--line); }
+  .stats b { display: block; font-family: var(--serif); font-size: 52px; font-weight: 500; line-height: 1.1; }
+  .stats span { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+  /* Arch frames */
+  .arch { border-radius: 999px 999px 4px 4px; overflow: hidden; outline: 1px solid var(--gold-soft); outline-offset: 10px; }
+  .arch img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Guide */
+  .guide .wrap { display: grid; grid-template-columns: 5fr 6fr; gap: 100px; align-items: center; }
+  .guide .arch { aspect-ratio: 3/4; max-width: 420px; justify-self: center; width: 100%; }
+  .guide .arch img { object-position: 50% 25%; }
+  .guide blockquote { margin: 34px 0 0; padding-left: 26px; border-left: 1px solid var(--gold); font-family: var(--serif); font-style: italic; font-size: 25px; line-height: 1.4; color: var(--ink); }
+
+  /* Events */
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 56px; flex-wrap: wrap; }
+  .head .lead { margin: 18px 0 0; }
+  .events { border-top: 1px solid var(--ink); }
+  .event { display: grid; grid-template-columns: 130px 1fr auto; gap: 32px; align-items: center; padding: 34px 0; border-bottom: 1px solid var(--line); }
+  .event .d { font-family: var(--serif); line-height: 1; }
+  .event .d b { font-size: 58px; font-weight: 500; display: block; }
+  .event .d small { font: 500 12px var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+  .event h3 { font-size: 30px; margin-bottom: 6px; }
+  .event .meta { font-size: 15px; color: var(--muted); }
+  .event .meta i { font-style: normal; color: var(--gold); }
+  .note { font-size: 13px; color: var(--muted); margin-top: 22px; font-style: italic; }
+
+  /* Programs */
+  .programs { background: rgba(255,253,248,.55); border-block: 1px solid var(--line); }
+  .paths { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .path { padding: 10px 34px 6px; text-decoration: none; display: flex; flex-direction: column; gap: 14px; }
+  .path + .path { border-left: 1px solid var(--line); }
+  .path:first-child { padding-left: 0; }
+  .path .num { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--gold); }
+  .path h3 { font-size: 30px; }
+  .path p { margin: 0; font-size: 16px; color: var(--muted); }
+  .path .link { margin-top: auto; align-self: flex-start; }
+
+  /* Practice */
+  .practice { background: rgba(31,23,18,.96); color: #efe6d6; }
+  .practice h2 em { color: var(--gold-soft); }
+  .practice .eyebrow { color: var(--gold-soft); }
+  .practice .eyebrow::before, .practice .eyebrow::after { background: var(--gold-soft); }
+  .practice .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; margin-top: 72px; }
+  .practice article { text-align: center; }
+  .practice .arch { aspect-ratio: 4/5; margin: 0 auto 34px; max-width: 280px; outline-color: rgba(217,196,154,.45); }
+  .practice h3 { font-size: 32px; margin-bottom: 10px; }
+  .practice p { margin: 0 auto; color: #bcae98; font-size: 16px; max-width: 22em; }
+
+  /* Lineage */
+  .lineage .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
+  .lineage .portrait { display: flex; gap: 30px; align-items: center; margin-top: 40px; }
+  .lineage .portrait .arch { width: 150px; aspect-ratio: 3/4; flex: none; outline-offset: 7px; }
+  .lineage .portrait .arch img { object-position: 50% 15%; }
+  .lineage .portrait p { margin: 0; font-family: var(--serif); font-size: 22px; line-height: 1.3; }
+  .lineage .portrait small { display: block; font: 500 11px var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold); margin-top: 6px; }
+  .timeline { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--gold-soft); }
+  .timeline li { position: relative; padding: 0 0 40px 36px; }
+  .timeline li::before { content: ""; position: absolute; left: -5px; top: 12px; width: 9px; height: 9px; rotate: 45deg; background: var(--ivory); border: 1px solid var(--gold); }
+  .timeline b { display: block; font-family: var(--serif); font-weight: 500; font-size: 30px; line-height: 1.2; }
+  .timeline span { font-size: 16px; color: var(--muted); }
+  .glossary { margin: 0; padding-top: 34px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; grid-column: 1 / -1; }
+  .glossary dt { font-family: var(--serif); font-style: italic; font-size: 22px; }
+  .glossary dd { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+
+  /* Video */
+  .video { background: rgba(239,231,217,.6); }
+  .video .wrap { display: grid; grid-template-columns: 1.35fr 1fr; gap: 80px; align-items: center; }
+  .video .frame { padding: 12px; border: 1px solid var(--gold-soft); }
+  .video iframe { width: 100%; aspect-ratio: 16/9; border: 0; display: block; background: #000; }
+
+  /* Gallery */
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 230px; gap: 14px; }
+  .gallery figure { margin: 0; overflow: hidden; position: relative; }
+  .gallery figure.wide { grid-column: span 2; grid-row: span 2; }
+  .gallery img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); transition: transform .6s ease, filter .6s; }
+  .gallery figure:hover img { transform: scale(1.04); filter: saturate(1); }
+  .gallery figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 18px 14px; background: linear-gradient(transparent, rgba(20,14,10,.7)); color: #fff; font-family: var(--serif); font-style: italic; font-size: 19px; }
+
+  /* Donate */
+  .donate { background: rgba(255,253,248,.55); border-top: 1px solid var(--line); }
+  .donate .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+  .amounts { display: grid; border-top: 1px solid var(--ink); }
+  .amount { display: flex; gap: 28px; align-items: baseline; padding: 24px 6px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background .2s; }
+  .amount b { font-family: var(--serif); font-weight: 500; font-size: 38px; min-width: 130px; }
+  .amount span { font-size: 16px; color: var(--muted); }
+  .amount.on { background: var(--ivory); }
+  .amount.on b { color: var(--gold); }
+  .donate .btn { margin-top: 36px; }
+
+  /* Blog */
+  .posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; }
+  .post { text-decoration: none; }
+  .post img { aspect-ratio: 4/3; object-fit: cover; width: 100%; margin-bottom: 22px; filter: saturate(.85); }
+  .post small { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+  .post h3 { font-size: 28px; margin: 8px 0 10px; }
+  .post p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  /* Footer */
+  footer { background: rgba(31,23,18,.96); color: #bcae98; padding: 90px 0 30px; font-size: 15px; }
+  footer .brand { text-align: center; padding-bottom: 60px; margin-bottom: 60px; border-bottom: 1px solid #3a2e24; }
+  footer .brand p { font-family: var(--serif); font-style: italic; font-size: 30px; color: #efe6d6; margin: 0; }
+  footer .cols { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.4fr; gap: 40px; }
+  footer h4 { color: var(--gold-soft); font: 500 12px var(--sans); letter-spacing: .24em; text-transform: uppercase; margin: 0 0 18px; }
+  footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: #fff; }
+  footer form { display: flex; margin-top: 14px; border-bottom: 1px solid #6a5a48; }
+  footer input { flex: 1; min-width: 0; padding: 12px 0; border: 0; background: transparent; color: #fff; font: 16px var(--sans); outline: none; }
+  footer form button { border: 0; background: none; color: var(--gold-soft); font: 500 12px var(--sans); letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
+  footer .base { border-top: 1px solid #3a2e24; margin-top: 70px; padding-top: 24px; font-size: 13px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  .wa { position: fixed; right: 30px; bottom: 96px; width: 44px !important; height: 44px !important; z-index: 30; width: 54px; height: 54px; border-radius: 50%; background: var(--ink); color: var(--gold-soft); display: grid; place-content: center; box-shadow: 0 8px 24px rgba(36,26,19,.22); text-decoration: none; border: 1px solid var(--gold); }
+  /* Ask SYAAT assistant */
+  .bot-open { position: fixed; right: 22px; bottom: 22px; z-index: 40; display: flex; align-items: center; gap: 12px; padding: 8px 22px 8px 8px; border: 1px solid var(--gold); border-radius: 999px; background: var(--ink); color: var(--ivory); font: 500 12px var(--sans); letter-spacing: .16em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 30px rgba(36,26,19,.25); }
+  .bot-face { width: 40px; height: 40px; border-radius: 50%; background: var(--ivory) url(img/ramlal-portrait.png) 50% 12% / 150% auto no-repeat; border: 1px solid var(--gold-soft); flex: none; }
+  .bot { position: fixed; right: 22px; bottom: 22px; z-index: 41; width: min(400px, 100vw - 32px); height: min(620px, 100vh - 44px); display: none; flex-direction: column; background: var(--paper); border: 1px solid var(--gold-soft); box-shadow: 0 24px 60px rgba(36,26,19,.25); }
+  .bot.open { display: flex; }
+  .bot-head { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: var(--ink); color: var(--ivory); }
+  .bot-head b { display: block; font: 500 22px var(--serif); line-height: 1.1; }
+  .bot-head small { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-soft); }
+  .bot-head button { margin-left: auto; border: 0; background: none; color: var(--gold-soft); font-size: 26px; line-height: 1; cursor: pointer; }
+  .bot-log { flex: 1; overflow-y: auto; padding: 20px 18px; display: flex; flex-direction: column; gap: 12px; background: var(--ivory) url(img/ramlal-outline.png) 50% 100% / 70% auto no-repeat; }
+  .msg { max-width: 86%; padding: 11px 15px; font-size: 15px; line-height: 1.55; white-space: pre-line; }
+  .msg.them { align-self: flex-start; background: rgba(255,253,248,.94); border: 1px solid var(--line); }
+  .msg.me { align-self: flex-end; background: var(--ink); color: var(--ivory); }
+  .msg a { color: var(--gold); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--gold-soft); background: rgba(255,253,248,.94); padding: 6px 12px; font: 14px var(--sans); color: var(--ink); cursor: pointer; }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .bot form { display: flex; border-top: 1px solid var(--line); }
+  .bot input { flex: 1; min-width: 0; border: 0; padding: 16px 18px; font: 16px var(--sans); background: var(--paper); outline: none; }
+  .bot form button { border: 0; background: none; padding: 0 18px; color: var(--gold); font: 500 12px var(--sans); letter-spacing: .18em; text-transform: uppercase; cursor: pointer; }
+  .bot .disclaim { margin: 0; padding: 6px 18px 10px; font-size: 11px; color: var(--muted); background: var(--paper); }
+  .mock { position: fixed; left: 22px; bottom: 22px; z-index: 30; background: rgba(36,26,19,.85); color: #efe6d6; font-size: 11px; letter-spacing: .08em; padding: 6px 14px; }
+
+  @media (max-width: 960px) {
+    section { padding: 80px 0; }
+    .nav ul { display: none; }
+    .lang { margin-left: auto; border: 0; }
+    .guide .wrap, .lineage .wrap, .video .wrap, .donate .wrap { grid-template-columns: 1fr; gap: 56px; }
+    .stats .wrap { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+    .stats div:nth-child(3) { border-left: 0; }
+    .paths { grid-template-columns: 1fr 1fr; row-gap: 44px; }
+    .path:nth-child(3) { border-left: 0; padding-left: 0; }
+    .practice .grid, .posts { grid-template-columns: 1fr; gap: 56px; }
+    .gallery { grid-template-columns: 1fr 1fr; grid-auto-rows: 160px; }
+    .glossary { grid-template-columns: 1fr; }
+    footer .cols { grid-template-columns: 1fr 1fr; }
+    .event { grid-template-columns: 90px 1fr; }
+    .event .d b { font-size: 46px; }
+    .event .link { grid-column: 2; justify-self: start; }
+  }
+  @media (max-width: 560px) {
+    .nav .btn { display: none; }
+    .paths, footer .cols { grid-template-columns: 1fr; }
+    .path, .path + .path { border-left: 0; padding: 0; }
+    .guru-outline { height: 70vh; }
+    .hero .ctas .btn { width: 100%; justify-content: center; }
+
+    /* Phones */
+    section { padding: 64px 0; }
+    h2 { font-size: 34px; }
+    .lead { font-size: 17px; }
+    .hero { min-height: 0; padding: 56px 0 120px; }
+    .hero h1 { font-size: 52px; }
+    .hero .founder { bottom: 28px; font-size: 16px; padding: 0 16px; }
+    .stats { padding: 32px 0; }
+    .stats b { font-size: 40px; }
+    .stats span { font-size: 11px; letter-spacing: .14em; }
+    .guide .arch { max-width: 280px; }
+    .guide blockquote { font-size: 21px; }
+    .event { gap: 4px 18px; padding: 26px 0; grid-template-columns: 64px 1fr; }
+    .event .d b { font-size: 38px; }
+    .event h3 { font-size: 25px; }
+    .path h3 { font-size: 26px; }
+    .practice .grid { margin-top: 44px; gap: 48px; }
+    .practice .arch { max-width: 220px; margin-bottom: 26px; }
+    .lineage .portrait { gap: 20px; }
+    .lineage .portrait .arch { width: 104px; }
+    .lineage .portrait p { font-size: 19px; }
+    .timeline b { font-size: 25px; }
+    .gallery { grid-auto-rows: 130px; gap: 8px; }
+    .gallery figcaption { font-size: 15px; padding: 28px 10px 8px; }
+    .amount { gap: 16px; padding: 18px 4px; }
+    .amount b { font-size: 30px; min-width: 96px; }
+    .post h3 { font-size: 24px; }
+    footer { padding-top: 64px; }
+    footer .brand p { font-size: 24px; }
+    footer .base { padding-bottom: 80px; }
+
+    /* Floating buttons: a round assistant button with WhatsApp above it, clear of the text. */
+    .mock { position: static; display: block; text-align: center; padding: 5px 12px; font-size: 10px; }
+    .bot-open { right: 16px; bottom: 16px; padding: 0; width: 56px; height: 56px; justify-content: center; border-radius: 50%; }
+    .bot-open > span:last-child { display: none; }
+    .bot-open .bot-face { width: 50px; height: 50px; }
+    .wa { right: 22px !important; bottom: 84px; }
+    .bot { right: 0; bottom: 0; width: 100vw; height: 88vh; height: 88dvh; border-width: 1px 0 0; }
+  }
+</style>
+</head>
+<body>
+
+<img class="guru-outline" src="img/ramlal-outline.png" alt="">
+<span class="mock">Redesign mockup · not the official site</span>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#"><img src="img/SYAAT-Logo-White-BG.png" alt="SYAAT — Yoga & Beyond, India"></a>
+    <ul>
+      <li><a href="#events" data-i18n="navEvents">Camps</a></li>
+      <li><a href="#programs" data-i18n="navPrograms">Programs</a></li>
+      <li><a href="#lineage" data-i18n="navAbout">Lineage</a></li>
+      <li><a href="#gallery" data-i18n="navCentres">Gallery</a></li>
+      <li><a href="#contact" data-i18n="navContact">Contact</a></li>
+    </ul>
+    <button class="lang" id="lang" type="button">हिंदी</button>
+    <a class="btn" href="#donate" data-i18n="navDonate">Donate</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="inner">
+      <p class="eyebrow" data-i18n="heroEyebrow">Shri Yog Abhyas Ashram Trust</p>
+      <h1><span data-i18n="heroTitle1">Yoga as a</span> <em data-i18n="heroTitle2">way of life</em></h1>
+      <div class="ornament" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 0 14 7 7 14 0 7z" fill="currentColor"/></svg></div>
+      <p class="lead" data-i18n="heroLead">Kriyas, asanas, pranayama and mudras, taught through free camps and regular guidance across 70+ centres in India and abroad.</p>
+      <div class="ctas">
+        <a class="btn" href="#events" data-i18n="heroCta1">Find a camp near you</a>
+        <a class="btn ghost" href="#programs" data-i18n="heroCta2">Book a session</a>
+      </div>
+    </div>
+    <p class="founder"><span data-i18n="founderLabel">In the lineage of</span><span style="display:inline;font:inherit;letter-spacing:0;text-transform:none;color:inherit" data-i18n="founderName">Yog Yogeshwar Mahaprabhu Ramlal Ji Bhagwan · 1888</span></p>
+  </section>
+
+  <div class="stats">
+    <div class="wrap">
+      <div><b>137</b><span data-i18n="stat1">Years of lineage</span></div>
+      <div><b>70+</b><span data-i18n="stat2">Centres</span></div>
+      <div><b>2,500+</b><span data-i18n="stat3">Camps held</span></div>
+      <div><b>1M+</b><span data-i18n="stat4">Seekers</span></div>
+    </div>
+  </div>
+
+  <section class="guide">
+    <div class="wrap">
+      <div class="arch"><img src="img/amit-dev-ji-1.jpg" alt="Pradhan Yogacharya Swami Amit Dev Ji in meditation"></div>
+      <div>
+        <p class="eyebrow" data-i18n="guEyebrow">Guided today by</p>
+        <h2>Pradhan Yogacharya <em>Swami Amit Dev Ji</em></h2>
+        <p class="lead" style="margin-top:24px" data-i18n="guLead">Every SYAAT camp and programme is led under his guidance, from Chhatrasal Stadium in Delhi to students in Russia, carrying forward the teaching of the Guru Parampara.</p>
+        <blockquote data-i18n="guQuote">"Yoga is not merely practised here. It is lived."</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section id="events" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow" data-i18n="evEyebrow">Upcoming camps</p>
+          <h2 data-i18n="evTitle">Practise with us</h2>
+          <p class="lead" data-i18n="evLead">Every camp is free and open to all ages. Register in a minute and receive the details on WhatsApp.</p>
+        </div>
+        <a class="link" href="#" data-i18n="evAll">All events</a>
+      </div>
+      <div class="events">
+        <article class="event">
+          <div class="d"><b>16</b><small>Nov</small></div>
+          <div><h3>Mahaprabhu Ji's Yoga Camp</h3><p class="meta">5:00 – 7:00 AM · Seven days · Yogeshwar DeviDayal Mahamandir, Tilak Nagar, Delhi · <i data-i18n="free">Free</i></p></div>
+          <a class="link" href="#" data-i18n="register">Register</a>
+        </article>
+        <article class="event">
+          <div class="d"><b>30</b><small>Nov</small></div>
+          <div><h3>Pranayama for stress and sleep</h3><p class="meta">6:30 – 8:00 AM · Sundays · Online, live with Amit Dev Ji · <i data-i18n="free">Free</i></p></div>
+          <a class="link" href="#" data-i18n="register">Register</a>
+        </article>
+        <article class="event">
+          <div class="d"><b>14</b><small>Dec</small></div>
+          <div><h3>Winter yoga camp for families</h3><p class="meta">9:00 AM · One day · Chhatrasal Stadium, Delhi · <i data-i18n="free">Free</i></p></div>
+          <a class="link" href="#" data-i18n="register">Register</a>
+        </article>
+      </div>
+      <p class="note" data-i18n="evNote">Mockup: these dates are samples, to be replaced with SYAAT's real schedule.</p>
+    </div>
+  </section>
+
+  <section class="programs" id="programs">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow" data-i18n="prEyebrow">Programs</p>
+          <h2><span data-i18n="prTitle1">Yoga for every</span> <em data-i18n="prTitle2">walk of life</em></h2>
+        </div>
+      </div>
+      <div class="paths">
+        <a class="path" href="#"><span class="num">i.</span><h3 data-i18n="p1t">Individuals</h3><p data-i18n="p1d">One-to-one sessions, at a centre or online, planned around your health.</p><span class="link" data-i18n="p1g">Book a session</span></a>
+        <a class="path" href="#"><span class="num">ii.</span><h3 data-i18n="p2t">Schools</h3><p data-i18n="p2d">Programmes that build focus, posture and calm in children.</p><span class="link" data-i18n="p2g">For your school</span></a>
+        <a class="path" href="#"><span class="num">iii.</span><h3 data-i18n="p3t">Corporates & CSR</h3><p data-i18n="p3d">Team sessions, team building with yoga, and CSR partnerships.</p><span class="link" data-i18n="p3g">Talk to us</span></a>
+        <a class="path" href="#"><span class="num">iv.</span><h3 data-i18n="p4t">Host a camp</h3><p data-i18n="p4d">Organise a free SYAAT yoga camp in your city or community.</p><span class="link" data-i18n="p4g">Organise a camp</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="practice">
+    <div class="wrap center">
+      <p class="eyebrow" data-i18n="ytEyebrow">What we practise</p>
+      <h2><span data-i18n="ytTitle1">Body, mind and spirit,</span> <em data-i18n="ytTitle2">together</em></h2>
+      <div class="grid">
+        <article><div class="arch"><img src="img/yoga-wellness.jpg" alt=""></div><h3 data-i18n="y1t">Wellness</h3><p data-i18n="y1d">Holistic health that goes beyond the body, to a mind aware of its thoughts and habits.</p></article>
+        <article><div class="arch"><img src="img/yoga-mindfulness.jpg" alt=""></div><h3 data-i18n="y2t">Mindfulness</h3><p data-i18n="y2d">Kriyas and pranayama that quiet the mind and build clarity and inner balance.</p></article>
+        <article><div class="arch"><img src="img/yoga-spirituality.jpg" alt=""></div><h3 data-i18n="y3t">Spirituality</h3><p data-i18n="y3d">Uniting body, mind and spirit under the guidance of a realised Guru.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="lineage" id="lineage">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow" data-i18n="liEyebrow">Our lineage</p>
+        <h2><span data-i18n="liTitle1">A living tradition</span> <em data-i18n="liTitle2">since 1888</em></h2>
+        <p class="lead" style="margin-top:24px" data-i18n="liLead">For 137 years, an unbroken line of Gurus has kept the authentic science of yoga alive, and taught it as a practical, everyday way of living.</p>
+        <div class="portrait">
+          <div class="arch"><img src="img/ramlal-portrait.png" alt="Yog Yogeshwar Mahaprabhu Ramlal Ji Bhagwan"></div>
+          <p>Yog Yogeshwar Mahaprabhu Ramlal Ji Bhagwan<small data-i18n="founderRole">Founder · First Guru Gaddi</small></p>
+        </div>
+      </div>
+      <ol class="timeline">
+        <li><b>1888</b><span data-i18n="t1">Yog Yogeshwar Mahaprabhu Ramlal Ji Bhagwan founds the Ashram, the first Guru Gaddi.</span></li>
+        <li><b data-i18n="t2t">The Guru Parampara</b><span data-i18n="t2">The teaching passes from Guru to Guru, unbroken, through Yogeshwar DeviDayal Mahamandir in Delhi.</span></li>
+        <li><b data-i18n="t3t">Today</b><span data-i18n="t3">Pradhan Yogacharya Swami Amit Dev Ji leads camps across India and abroad.</span></li>
+        <li style="padding-bottom:0"><b data-i18n="t4t">And now, you</b><span data-i18n="t4">Every camp is free and open to all.</span></li>
+      </ol>
+      <dl class="glossary">
+        <div><dt>Guru Parampara</dt><dd data-i18n="g1">The unbroken line of teachers, each trained by the one before.</dd></div>
+        <div><dt>Guru Gaddi</dt><dd data-i18n="g2">The seat of the Guru, held by one teacher at a time.</dd></div>
+        <div><dt>Mahaprabhu Ji</dt><dd data-i18n="g3">How followers lovingly refer to the Gurus of the lineage.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="video">
+    <div class="wrap">
+      <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/d7nR8oELEYE" title="Swami Amit Dev's yoga solution for cold and cough" loading="lazy" allowfullscreen></iframe></div>
+      <div>
+        <p class="eyebrow" data-i18n="viEyebrow">Watch</p>
+        <h2><span data-i18n="viTitle1">Yoga for</span> <em data-i18n="viTitle2">cold and cough</em></h2>
+        <p class="lead" style="margin:22px 0 34px" data-i18n="viLead">A short practice from Swami Amit Dev Ji that you can try at home today.</p>
+        <a class="link" href="#" data-i18n="viMore">More on YouTube</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow" data-i18n="gaEyebrow">From our camps</p>
+          <h2><span data-i18n="gaTitle1">Thousands,</span> <em data-i18n="gaTitle2">one breath</em></h2>
+        </div>
+        <a class="link" href="#" data-i18n="gaMore">Full gallery</a>
+      </div>
+      <div class="gallery">
+        <figure class="wide"><img src="img/Slide1.jpeg" alt="" style="object-position:0 0"><figcaption>Mass yoga camp, Ayodhya</figcaption></figure>
+        <figure><img src="img/event-01.jpg" alt=""><figcaption>Chhatrasal Stadium, Delhi</figcaption></figure>
+        <figure><img src="img/new-03.jpg" alt=""><figcaption>Russia</figcaption></figure>
+        <figure><img src="img/Slide4.jpeg" alt="" style="object-position:0 0"><figcaption>Asana practice</figcaption></figure>
+        <figure><img src="img/Slide14.jpeg" alt="" style="object-position:100% 0"><figcaption>Satsang</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="donate" id="donate">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow" data-i18n="doEyebrow">Support the mission</p>
+        <h2><span data-i18n="doTitle1">Keep every camp</span> <em data-i18n="doTitle2">free</em></h2>
+        <p class="lead" style="margin-top:24px" data-i18n="doLead">SYAAT camps are free for everyone who comes. Your gift pays for the venue, mats and water, so the next camp can happen.</p>
+        <a class="btn" href="#" data-i18n="doCta">Donate securely</a>
+        <p class="note" data-i18n="doNote">UPI, cards and net banking. Receipt sent by email. (Mockup: amounts are samples.)</p>
+      </div>
+      <div class="amounts" id="amounts">
+        <label class="amount"><b>₹500</b><span data-i18n="a1">Mats and water for one camp morning</span></label>
+        <label class="amount on"><b>₹2,100</b><span data-i18n="a2">One free school session for a class</span></label>
+        <label class="amount"><b>₹11,000</b><span data-i18n="a3">A full seven-day camp in a new city</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow" data-i18n="blEyebrow">Read</p>
+          <h2><span data-i18n="blTitle1">Words from</span> <em data-i18n="blTitle2">the Ashram</em></h2>
+        </div>
+        <a class="link" href="#" data-i18n="blAll">All articles</a>
+      </div>
+      <div class="posts">
+        <a class="post" href="#"><img src="img/amit-dev-ji-1.jpg" alt="" style="object-position:50% 20%"><small>Practice</small><h3>Integrating yoga with modern practices</h3><p>Yoga is a journey, a process by which we are transformed. Its tenets are more useful today than ever.</p></a>
+        <a class="post" href="#"><img src="img/always-remember.jpg" alt=""><small>Reflection</small><h3>Always remember</h3><p>In this world we are all like travellers in a caravanserai, who stop for a little while and then depart.</p></a>
+        <a class="post" href="#"><img src="img/pain-a-blessing-in-disguise-1.jpg" alt=""><small>Reflection</small><h3>Pain: a blessing in disguise</h3><p>How suffering, met with patience and practice, can become the start of healing.</p></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="brand">
+      <div class="ornament" aria-hidden="true" style="margin-top:0"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 0 14 7 7 14 0 7z" fill="currentColor"/></svg></div>
+      <p data-i18n="fTag">Welcome to the path of Yoga.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4 data-i18n="fHq">Headquarters</h4>
+        <p style="margin:0">Yogeshwar DeviDayal Mahamandir<br>A-777, Block 8, Tilak Nagar<br>New Delhi 110018</p>
+        <p><a href="tel:+911140000777">+91 11 400 00777</a><br><a href="mailto:info@syaat.org">info@syaat.org</a></p>
+      </div>
+      <div>
+        <h4 data-i18n="fAbout">About</h4>
+        <ul><li><a href="#lineage">Guru Parampara</a></li><li><a href="#lineage">History</a></li><li><a href="#">Aims & objectives</a></li><li><a href="#">Media</a></li></ul>
+      </div>
+      <div>
+        <h4 data-i18n="fJoin">Get involved</h4>
+        <ul><li><a href="#">Volunteer</a></li><li><a href="#">Organise a camp</a></li><li><a href="#">Contribute</a></li><li><a href="#donate">Donate</a></li></ul>
+      </div>
+      <div>
+        <h4 data-i18n="fNews">Camp updates</h4>
+        <p style="margin:0" data-i18n="fNewsLead">New camp dates near you, once a month.</p>
+        <form onsubmit="event.preventDefault(); this.outerHTML = '<p style=&quot;color:#efe6d6&quot;>Thank you. (mockup)</p>'">
+          <input type="email" placeholder="Your email" required aria-label="Your email">
+          <button type="submit" data-i18n="fSub">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="base"><span>© 2026 Shri Yog Abhyas Ashram Trust [Regd.]</span><span><a href="#">Privacy</a> · <a href="#">Terms</a></span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/919911811777" aria-label="Chat on WhatsApp" target="_blank" rel="noopener"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.200 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3z"/></svg></a>
+<button class="bot-open" id="botOpen" type="button" aria-controls="bot"><span class="bot-face" aria-hidden="true"></span><span data-i18n="botBtn">Ask SYAAT</span></button>
+<div class="bot" id="bot" role="dialog" aria-label="Ask SYAAT">
+  <div class="bot-head"><span class="bot-face" aria-hidden="true"></span><div><b data-i18n="botTitle">Ask SYAAT</b><small data-i18n="botSub">Camps · practice · lineage</small></div><button id="botClose" type="button" aria-label="Close">×</button></div>
+  <div class="bot-log" id="botLog" aria-live="polite"></div>
+  <form id="botForm"><input id="botInput" placeholder="Ask about camps, yoga, donations…" aria-label="Your question" autocomplete="off"><button type="submit" data-i18n="botSend">Send</button></form>
+  <p class="disclaim" data-i18n="botNote">Demo assistant: answers come from SYAAT's website, not live AI yet.</p>
+</div>
+
+<script>
+  const hi = {
+    navEvents: "शिविर", navPrograms: "कार्यक्रम", navAbout: "परंपरा", navCentres: "गैलरी", navContact: "संपर्क", navDonate: "दान करें",
+    heroEyebrow: "श्री योग अभ्यास आश्रम ट्रस्ट", heroTitle1: "योग,", heroTitle2: "जीवन जीने का तरीका",
+    heroLead: "क्रियाएँ, आसन, प्राणायाम और मुद्राएँ, भारत और विदेश में 70+ केंद्रों पर निःशुल्क शिविरों और नियमित मार्गदर्शन से सिखाई जाती हैं।",
+    heroCta1: "अपने पास शिविर खोजें", heroCta2: "सत्र बुक करें", founderLabel: "परंपरा", founderName: "योग योगेश्वर महाप्रभु रामलाल जी भगवान · 1888",
+    stat1: "वर्षों की परंपरा", stat2: "केंद्र", stat3: "शिविर आयोजित", stat4: "साधक",
+    guEyebrow: "आज के मार्गदर्शक", guLead: "हर SYAAT शिविर और कार्यक्रम उन्हीं के मार्गदर्शन में होता है, दिल्ली के छत्रसाल स्टेडियम से लेकर रूस तक, गुरु परंपरा की शिक्षा को आगे बढ़ाते हुए।", guQuote: "“यहाँ योग केवल किया नहीं जाता, जिया जाता है।”",
+    evEyebrow: "आगामी शिविर", evTitle: "हमारे साथ अभ्यास करें", evLead: "हर शिविर निःशुल्क है और सभी उम्र के लिए खुला है। एक मिनट में पंजीकरण करें, जानकारी WhatsApp पर मिलेगी।",
+    evAll: "सभी कार्यक्रम", free: "निःशुल्क", register: "पंजीकरण", evNote: "मॉकअप: ये तिथियाँ उदाहरण हैं।",
+    prEyebrow: "कार्यक्रम", prTitle1: "जीवन के हर", prTitle2: "पड़ाव के लिए योग",
+    p1t: "व्यक्तिगत", p1d: "केंद्र पर या ऑनलाइन, आपके स्वास्थ्य के अनुसार सत्र।", p1g: "सत्र बुक करें",
+    p2t: "स्कूल", p2d: "बच्चों में एकाग्रता, सही मुद्रा और शांति लाने वाले कार्यक्रम।", p2g: "आपके स्कूल के लिए",
+    p3t: "कॉर्पोरेट और CSR", p3d: "टीम सत्र, योग से टीम बिल्डिंग और CSR साझेदारी।", p3g: "हमसे बात करें",
+    p4t: "शिविर आयोजित करें", p4d: "अपने शहर या समुदाय में निःशुल्क SYAAT योग शिविर आयोजित करें।", p4g: "शिविर आयोजित करें",
+    ytEyebrow: "हमारा अभ्यास", ytTitle1: "शरीर, मन और आत्मा,", ytTitle2: "एक साथ",
+    y1t: "स्वास्थ्य", y1d: "केवल शरीर नहीं, ऐसा मन भी जो अपने विचारों और आदतों के प्रति सजग हो।",
+    y2t: "सजगता", y2d: "क्रियाएँ और प्राणायाम जो मन को शांत करें और भीतर संतुलन लाएँ।",
+    y3t: "आध्यात्म", y3d: "सिद्ध गुरु के मार्गदर्शन में शरीर, मन और आत्मा का मिलन।",
+    liEyebrow: "हमारी परंपरा", liTitle1: "एक जीवित परंपरा,", liTitle2: "1888 से",
+    liLead: "137 वर्षों से गुरुओं की अखंड परंपरा ने योग के प्रामाणिक विज्ञान को जीवित रखा है, और उसे रोज़मर्रा के जीवन का मार्ग बनाया है।", founderRole: "संस्थापक · प्रथम गुरु गद्दी",
+    g1: "गुरुओं की अखंड श्रृंखला, हर गुरु पिछले गुरु से दीक्षित।", g2: "गुरु का आसन, जिसे एक समय में एक ही गुरु सँभालते हैं।", g3: "परंपरा के गुरुओं को अनुयायी प्रेम से इसी नाम से पुकारते हैं।",
+    t1: "योग योगेश्वर महाप्रभु रामलाल जी भगवान ने आश्रम की स्थापना की, प्रथम गुरु गद्दी।", t2t: "गुरु परंपरा", t2: "शिक्षा गुरु से गुरु तक, दिल्ली के योगेश्वर देवीदयाल महामंदिर के माध्यम से।",
+    t3t: "आज", t3: "प्रधान योगाचार्य स्वामी अमित देव जी भारत और विदेश में शिविर चलाते हैं।", t4t: "और अब, आप", t4: "हर शिविर निःशुल्क और सभी के लिए खुला है।",
+    viEyebrow: "देखें", viTitle1: "सर्दी-खाँसी के लिए", viTitle2: "योग", viLead: "स्वामी अमित देव जी का एक छोटा अभ्यास, जिसे आप आज ही घर पर कर सकते हैं।", viMore: "YouTube पर और देखें",
+    gaEyebrow: "हमारे शिविरों से", gaTitle1: "हज़ारों साधक,", gaTitle2: "एक साँस", gaMore: "पूरी गैलरी",
+    doEyebrow: "मिशन में सहयोग करें", doTitle1: "हर शिविर", doTitle2: "निःशुल्क रखें", doLead: "SYAAT शिविर सभी के लिए निःशुल्क हैं। आपका दान स्थान, मैट और पानी का खर्च उठाता है।",
+    doCta: "सुरक्षित दान करें", doNote: "UPI, कार्ड और नेट बैंकिंग। रसीद ईमेल पर। (मॉकअप: राशियाँ उदाहरण हैं।)",
+    a1: "एक शिविर की सुबह के लिए मैट और पानी", a2: "एक कक्षा के लिए निःशुल्क स्कूल सत्र", a3: "नए शहर में सात दिन का पूरा शिविर",
+    blEyebrow: "पढ़ें", blTitle1: "आश्रम से", blTitle2: "विचार", blAll: "सभी लेख",
+    botBtn: "SYAAT से पूछें", botTitle: "SYAAT से पूछें", botSub: "शिविर · अभ्यास · परंपरा", botSend: "भेजें", botNote: "डेमो सहायक: उत्तर SYAAT की वेबसाइट से हैं, अभी लाइव AI नहीं।",
+    fTag: "योग के मार्ग पर आपका स्वागत है।", fHq: "मुख्यालय", fAbout: "हमारे बारे में", fJoin: "जुड़ें", fNews: "शिविर की जानकारी", fNewsLead: "अपने पास नए शिविरों की तिथियाँ, महीने में एक बार।", fSub: "जुड़ें"
+  };
+  const nodes = [...document.querySelectorAll('[data-i18n]')];
+  const en = Object.fromEntries(nodes.map(n => [n.dataset.i18n, n.textContent]));
+  const btn = document.getElementById('lang');
+  btn.addEventListener('click', () => {
+    const toHi = document.documentElement.lang !== 'hi';
+    document.documentElement.lang = toHi ? 'hi' : 'en';
+    nodes.forEach(n => { const t = (toHi ? hi : en)[n.dataset.i18n]; if (t) n.textContent = t; });
+    btn.textContent = toHi ? 'English' : 'हिंदी';
+  });
+  // Ask SYAAT: answers from SYAAT's own website content. To make it real AI later,
+  // replace answer() with a call to a small server that sends the question and this knowledge to a model.
+  const KB = [
+    { k: ['next', 'upcoming', 'when', 'date', 'schedule', 'कब', 'अगला'], weak: ['camp', 'शिविर'], en: "Upcoming camps (sample dates in this mockup):\n• 16 Nov · Mahaprabhu Ji's Yoga Camp, Tilak Nagar, Delhi, 5–7 AM\n• 30 Nov · Pranayama for stress and sleep, online\n• 14 Dec · Winter camp for families, Chhatrasal Stadium\nTap Register on any camp and details come on WhatsApp.", hi: "आगामी शिविर (इस मॉकअप में उदाहरण तिथियाँ):\n• 16 नवंबर · महाप्रभु जी का योग शिविर, तिलक नगर, दिल्ली, सुबह 5–7\n• 30 नवंबर · तनाव और नींद के लिए प्राणायाम, ऑनलाइन\n• 14 दिसंबर · परिवारों के लिए शीतकालीन शिविर, छत्रसाल स्टेडियम" },
+    { k: ['free', 'fee', 'cost', 'price', 'charge', 'paid', 'निःशुल्क', 'फीस', 'पैसे'], en: "SYAAT yoga camps are free and open to people of all ages. Individual and corporate sessions are arranged separately; call +91 11 400 00777 for details.", hi: "SYAAT के योग शिविर निःशुल्क हैं और सभी उम्र के लोगों के लिए खुले हैं। व्यक्तिगत और कॉर्पोरेट सत्रों के लिए +91 11 400 00777 पर संपर्क करें।" },
+    { k: ['where', 'address', 'location', 'ashram', 'centre', 'center', 'delhi', 'कहाँ', 'पता', 'आश्रम'], en: "Headquarters: Yogeshwar DeviDayal Mahamandir, A-777, Block 8, Tilak Nagar, New Delhi 110018. SYAAT has 70+ centres in India and abroad.", hi: "मुख्यालय: योगेश्वर देवीदयाल महामंदिर, A-777, ब्लॉक 8, तिलक नगर, नई दिल्ली 110018। भारत और विदेश में 70+ केंद्र हैं।" },
+    { k: ['ramlal', 'founder', 'founded', '1888', 'history', 'guru', 'lineage', 'parampara', 'रामलाल', 'गुरु', 'परंपरा', 'इतिहास'], en: "SYAAT was founded in 1888 by Yog Yogeshwar Mahaprabhu Ramlal Ji Bhagwan, the first Guru Gaddi. The teaching has passed from Guru to Guru, unbroken, for 137 years. Today Pradhan Yogacharya Swami Amit Dev Ji leads the camps.", hi: "SYAAT की स्थापना 1888 में योग योगेश्वर महाप्रभु रामलाल जी भगवान ने की, जो प्रथम गुरु गद्दी हैं। 137 वर्षों से यह शिक्षा गुरु से गुरु तक अखंड चली आ रही है। आज प्रधान योगाचार्य स्वामी अमित देव जी शिविरों का नेतृत्व करते हैं।" },
+    { k: ['amit', 'swami', 'teacher', 'yogacharya', 'अमित', 'स्वामी'], en: "Pradhan Yogacharya Swami Amit Dev Ji guides every SYAAT camp and programme, in India and abroad, including camps at Chhatrasal Stadium in Delhi and in Russia.", hi: "प्रधान योगाचार्य स्वामी अमित देव जी भारत और विदेश में हर SYAAT शिविर और कार्यक्रम का मार्गदर्शन करते हैं।" },
+    { k: ['donate', 'donation', 'give', 'support', 'contribute', 'दान', 'सहयोग'], en: "Thank you! Donations keep every camp free. ₹500 covers mats and water for one camp morning, ₹2,100 a school session (sample amounts). Use the Donate button at the top of the page.", hi: "धन्यवाद! आपका दान हर शिविर को निःशुल्क रखता है। पेज के ऊपर 'दान करें' बटन का उपयोग करें।" },
+    { k: ['corporate', 'company', 'office', 'team', 'csr', 'school', 'कॉर्पोरेट', 'स्कूल', 'कंपनी'], en: "SYAAT runs corporate yoga sessions, team building with yoga, CSR partnerships and school programmes. See Programs on this page, or call +91 11 400 00777.", hi: "SYAAT कॉर्पोरेट योग सत्र, योग से टीम बिल्डिंग, CSR साझेदारी और स्कूल कार्यक्रम चलाता है। +91 11 400 00777 पर संपर्क करें।" },
+    { k: ['volunteer', 'organise', 'organize', 'host', 'स्वयंसेवक', 'आयोजित'], en: "You can become a volunteer, or organise a free SYAAT yoga camp in your city. Pick Host a camp under Programs, or message us on WhatsApp.", hi: "आप स्वयंसेवक बन सकते हैं, या अपने शहर में निःशुल्क SYAAT शिविर आयोजित कर सकते हैं। WhatsApp पर संदेश भेजें।" },
+    { k: ['what', 'teach', 'practice', 'practise', 'kriya', 'asana', 'pranayama', 'mudra', 'क्रिया', 'आसन', 'प्राणायाम', 'क्या सिख'], en: "SYAAT teaches yogic kriyas, asanas, pranayama and mudras, as a complete way of life for body, mind and spirit, not only physical exercise.", hi: "SYAAT योगिक क्रियाएँ, आसन, प्राणायाम और मुद्राएँ सिखाता है, शरीर, मन और आत्मा के लिए जीवन जीने के पूर्ण तरीके के रूप में।" },
+    { k: ['cold', 'cough', 'health', 'stress', 'sleep', 'pain', 'सर्दी', 'खाँसी', 'तनाव'], en: "Swami Amit Dev Ji has a short yoga practice for cold and cough in the video on this page. For a health condition, please also consult a doctor, and speak to a SYAAT teacher before starting.", hi: "इस पेज के वीडियो में सर्दी-खाँसी के लिए स्वामी अमित देव जी का छोटा अभ्यास है। किसी बीमारी में डॉक्टर से भी सलाह लें।" },
+    { k: ['contact', 'reach', 'talk', 'phone', 'call', 'email', 'whatsapp', 'number', 'संपर्क', 'फोन', 'नंबर'], en: "Phone: +91 11 400 00777 · WhatsApp: +91 99118 11777 · Email: info@syaat.org", hi: "फोन: +91 11 400 00777 · WhatsApp: +91 99118 11777 · ईमेल: info@syaat.org" }
+  ];
+  const isHi = (q) => /[\u0900-\u097F]/.test(q) || document.documentElement.lang === 'hi';
+  function answer(q) {
+    const s = q.toLowerCase();
+    let best = null, score = 0;
+    for (const item of KB) {
+      const n = item.k.filter((w) => s.includes(w)).length + (item.weak ?? []).filter((w) => s.includes(w)).length * .5;
+      if (n > score) { best = item; score = n; }
+    }
+    const hiOut = isHi(q);
+    if (best) return hiOut ? best.hi : best.en;
+    return hiOut ? "माफ़ कीजिए, इसका उत्तर मेरे पास नहीं है। कृपया +91 11 400 00777 पर कॉल करें या WhatsApp करें।" : "I'm not sure about that one. Please call +91 11 400 00777 or message us on WhatsApp, and the Ashram team will help.";
+  }
+  const bot = document.getElementById('bot'), log = document.getElementById('botLog'), input = document.getElementById('botInput');
+  const say = (text, who) => { const m = document.createElement('div'); m.className = 'msg ' + who; m.textContent = text; log.appendChild(m); log.scrollTop = log.scrollHeight; };
+  const ask = (q) => { say(q, 'me'); setTimeout(() => say(answer(q), 'them'), 380); };
+  function greet() {
+    const hiOut = document.documentElement.lang === 'hi';
+    say(hiOut ? "नमस्ते 🙏 मैं SYAAT का सहायक हूँ। शिविर, अभ्यास, परंपरा या दान के बारे में पूछें।" : "Namaste 🙏 I'm SYAAT's assistant. Ask me about camps, practice, our lineage or donating.", 'them');
+    const chips = document.createElement('div'); chips.className = 'chips';
+    (hiOut ? ['अगला शिविर कब है?', 'क्या शिविर निःशुल्क है?', 'आश्रम कहाँ है?', 'रामलाल जी कौन थे?'] : ['When is the next camp?', 'Are camps free?', 'Where is the ashram?', 'Who was Ramlal Ji?', 'Corporate sessions'])
+      .forEach((c) => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = c; b.onclick = () => ask(c); chips.appendChild(b); });
+    log.appendChild(chips);
+  }
+  document.getElementById('botOpen').onclick = () => { bot.classList.add('open'); if (!log.children.length) greet(); input.focus(); };
+  document.getElementById('botClose').onclick = () => bot.classList.remove('open');
+  document.getElementById('botForm').addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (!q) return; input.value = ''; ask(q); });
+  document.getElementById('amounts').addEventListener('click', (e) => {
+    const a = e.target.closest('.amount'); if (!a) return;
+    document.querySelectorAll('.amount').forEach(x => x.classList.toggle('on', x === a));
+  });
+</script>
+</body>
+</html>

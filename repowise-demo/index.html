@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>First Day on Flask</title>
+<meta name="description" content="An onboarding quest and change preview built on Repowise's open-source codebase index of pallets/flask.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f766e'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='monospace'>D1</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f1;--card:#fff;--ink:#16181d;--ink2:#3b3f48;--muted:#6b7079;--line:#e4e2dc;--soft:#efede7;
+  --accent:#0f766e;--accent-bg:#e3f3f1;--accent-ink:#fff;
+  --green:#0a8a0a;--green-bg:#e6f5e6;--amber:#9a6700;--amber-bg:#fff4d6;--red:#c22f2f;--red-bg:#fbe9e9;
+  --code:#14161b;--code-ink:#d9dce2;
+  --shadow:0 1px 2px rgba(20,20,20,.05),0 6px 20px rgba(20,20,20,.05);
+  --head:'Space Grotesk',Inter,system-ui,sans-serif;--body:Inter,system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111317;--card:#1a1d23;--ink:#eceef2;--ink2:#c5c9d1;--muted:#8d939e;--line:#2b2f37;--soft:#22262d;
+  --accent:#2dd4bf;--accent-bg:#123a36;--accent-ink:#0b1f1d;
+  --green:#4cc24c;--green-bg:#16301a;--amber:#f0b429;--amber-bg:#3a2e10;--red:#f06a6a;--red-bg:#3a1a1a;
+  --code:#0b0d10;--shadow:none;}}
+:root[data-theme="dark"]{
+  --bg:#111317;--card:#1a1d23;--ink:#eceef2;--ink2:#c5c9d1;--muted:#8d939e;--line:#2b2f37;--soft:#22262d;
+  --accent:#2dd4bf;--accent-bg:#123a36;--accent-ink:#0b1f1d;
+  --green:#4cc24c;--green-bg:#16301a;--amber:#f0b429;--amber-bg:#3a2e10;--red:#f06a6a;--red-bg:#3a1a1a;
+  --code:#0b0d10;--shadow:none;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+h1,h2,h3{font-family:var(--head);line-height:1.2;margin:0 0 .4em}
+a{color:var(--accent)}
+code,.mono{font-family:var(--mono);font-size:.88em}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{padding:28px 0 8px}
+.kicker{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+header h1{font-size:clamp(28px,5vw,44px);margin-top:6px}
+header p{color:var(--ink2);max-width:720px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.facts span{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font:500 12.5px var(--mono);color:var(--ink2)}
+nav.tabs{display:flex;gap:4px;margin:22px 0 18px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:2.5px solid transparent;padding:10px 14px;font:600 14px var(--body);color:var(--muted);cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--ink);border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:11px;padding:10px 16px;font:600 14px var(--body);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+footer{color:var(--muted);font-size:13px;padding:30px 0 40px}
+
+/* quest */
+.qtop{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.dots{display:flex;gap:5px;flex:1;min-width:140px}
+.dots i{flex:1;height:5px;border-radius:3px;background:var(--soft)}
+.dots i.right{background:var(--green)} .dots i.wrong{background:var(--red)} .dots i.now{background:var(--ink)}
+.rtype{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.prompt{font:600 21px/1.35 var(--head);margin:6px 0 4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.file{font:600 .9em var(--mono);background:var(--accent-bg);color:var(--accent);padding:1px 7px;border-radius:6px;white-space:nowrap}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 14px;font:500 14px var(--mono);cursor:pointer;word-break:break-all}
+.opt:hover:not(:disabled){border-color:var(--ink2)}
+.opt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.opt .box{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:5px;display:grid;place-items:center;font-size:12px}
+.opt.radio .box{border-radius:50%}
+.opt.on .box{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.opt.right{border-color:var(--green);background:var(--green-bg)}
+.opt.wrong{border-color:var(--red);background:var(--red-bg)}
+.opt.missed{border-style:dashed;border-color:var(--green)}
+.opt .tag{margin-left:auto;font:600 11.5px var(--body);white-space:nowrap}
+.opt.right .tag{color:var(--green)} .opt.wrong .tag{color:var(--red)} .opt.missed .tag{color:var(--green)}
+.slider{margin:6px 0 4px}
+.slider input{width:100%;accent-color:var(--ink)}
+.slider input.untouched{opacity:.35}
+.slider .val{font:700 36px var(--head)}
+.ticks{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--muted)}
+.lock{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.lock .btn{flex:1;justify-content:center;min-width:150px}
+.lockhint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.reveal{margin-top:16px;border-radius:12px;padding:14px 16px;border:1px solid var(--line);background:var(--soft)}
+.verdict{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:6px}
+.verdict.ok{color:var(--green)} .verdict.bad{color:var(--red)}
+.reveal p{margin:6px 0;color:var(--ink2);font-size:14px}
+pre.agent{background:var(--code);color:var(--code-ink);border-radius:10px;padding:12px 14px;font:12px/1.5 var(--mono);overflow-x:auto;margin:10px 0 0;white-space:pre}
+pre.agent .c{color:#7f8794} pre.agent .k{color:#5eead4} pre.agent .s{color:#fbbf77}
+.side h3{font-size:16px}
+.side p{font-size:14px;color:var(--ink2)}
+.cal{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.cal div{border-radius:12px;padding:12px;background:var(--soft)}
+.cal b{display:block;font:700 26px var(--head)}
+.cal small{color:var(--muted);font-size:12.5px;line-height:1.35;display:block}
+.cal .danger{background:var(--red-bg)} .cal .danger b{color:var(--red)}
+.score{font:700 64px/1 var(--head)}
+.blind{margin:8px 0 0;padding:0;list-style:none}
+.blind li{padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.status{display:inline-flex;align-items:center;gap:5px;font:600 12px var(--body);padding:2px 9px;border-radius:99px}
+.status.ok{background:var(--green-bg);color:var(--green)} .status.warn{background:var(--amber-bg);color:var(--amber)} .status.bad{background:var(--red-bg);color:var(--red)}
+
+/* change preview */
+.picker{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+.picker label{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);cursor:pointer;font:500 13px var(--mono)}
+.picker label:first-child{border-top:0}
+.picker label:hover{background:var(--soft)}
+.picker label small{margin-left:auto;font:500 11.5px var(--body);color:var(--muted);white-space:nowrap}
+.picker input{accent-color:var(--ink)}
+.pfilter{width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 12px;font:14px var(--body);margin-bottom:10px}
+.risk-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.risk-head h2{margin:0;font-size:22px}
+.sec{border-top:1px solid var(--line);padding:12px 0 4px}
+.sec h4{margin:0 0 6px;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sec ul{margin:0;padding-left:18px} .sec li{margin:3px 0;font-size:14px}
+.sec p{margin:4px 0;font-size:14px;color:var(--ink2)}
+.empty{color:var(--muted);text-align:center;padding:60px 10px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* how */
+.how h3{margin-top:22px;font-size:18px}
+.how table{width:100%;border-collapse:collapse;font-size:14px}
+.how th,.how td{text-align:left;padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
+.how th{font:600 12px var(--mono);text-transform:uppercase;color:var(--muted);letter-spacing:.05em}
+.tablewrap{overflow-x:auto}
+@media (max-width:640px){.how th,.how td{min-width:120px}.card{padding:16px}.prompt{font-size:19px}}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;font:600 13px var(--body);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Unofficial POC · built on Repowise's open-source index</div>
+    <h1>First Day on Flask</h1>
+    <p>A new engineer's first questions are the same ones a coding agent asks: what breaks if I touch this, what else usually changes with it, which tests to run, who to ask. Every answer on this page comes straight from a real Repowise index of <a href="https://github.com/pallets/flask">pallets/flask</a>, built with no model and no API key.</p>
+    <div class="facts" id="facts"></div>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button class="on" data-tab="quest">Onboarding quest</button>
+    <button data-tab="preview">Change preview</button>
+    <button data-tab="how">How it's built</button>
+  </nav>
+  <main>
+    <section id="tab-quest"></section>
+    <section id="tab-preview" hidden></section>
+    <section id="tab-how" hidden></section>
+  </main>
+  <footer>Made by Unnati as an unofficial proof of concept. Not affiliated with Repowise. Code data: pallets/flask (BSD-3). Index: <a href="https://github.com/repowise-dev/repowise">repowise</a> v0.60.1 (AGPL-3.0), run locally.</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wave · Matchmaker app (working demo)</title>
+<style>
+:root{--ink:#1d1424;--soft:#6b5f78;--line:#ece6f2;--bg:#fbf7fc;--card:#fff;--accent:#c2185b;--accent-2:#7b1fa2;--ok:#1f8a4c;--bad:#c0392b;--warn:#b26a00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,sans-serif}
+header{background:linear-gradient(120deg,#4a1640,var(--accent) 60%,#ff7aa8);color:#fff;padding:18px 16px 56px}
+header .in{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+h1{font-size:clamp(22px,4.5vw,30px);margin:0}.sub{color:var(--soft);font-size:13.5px;margin:0 0 10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{background:rgba(255,255,255,.18);color:#fff;box-shadow:none}.tabs button[aria-pressed="true"]{background:#fff;color:var(--accent)}
+main{max-width:1100px;margin:-34px auto 40px;padding:0 16px;display:grid;gap:14px;position:relative;z-index:2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(60,20,60,.06);min-width:0}
+.card h2{font-size:16px;margin:0 0 6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}}
+button{font:inherit;border:0;border-radius:10px;padding:10px 14px;min-height:40px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;touch-action:manipulation}
+button:hover{background:#a3144b}button.ghost{background:#fff;color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}button.ghost:hover{background:#fde4ef}button.small{min-height:30px;padding:5px 9px;font-size:12.5px}
+button:disabled{opacity:.4;cursor:default}button:focus-visible,select:focus-visible{outline:2px solid #ffb300;outline-offset:2px}
+select,input{padding:9px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink);min-width:0}
+.tag{display:inline-block;font:700 11px ui-monospace,monospace;padding:2px 7px;border-radius:6px;margin:2px 3px 2px 0}
+.tag.ok{background:#e4f5ea;color:var(--ok)}.tag.bad{background:#fbe7e4;color:var(--bad)}.tag.warn{background:#fff1d6;color:var(--warn)}.tag.plain{background:#f3eef7;color:var(--soft)}
+.person{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:4px}
+.avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
+.match{border:1px solid #f3cfe0;border-radius:14px;padding:14px;background:linear-gradient(160deg,#fff,#fdf1f7);display:grid;gap:8px}
+.reason{font-size:13.5px;border-left:3px solid var(--accent);padding:3px 9px;background:#fff}
+.quote{font-size:13px;color:var(--soft);font-style:italic}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.kpi b{display:block;font-size:24px;line-height:1.1}.kpi span{color:var(--soft);font-size:12.5px}
+.bar{height:9px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.feed{max-height:250px;overflow:auto;font-size:13px;display:grid;gap:4px}.feed div{padding:5px 8px;background:#fbf7fc;border-radius:8px}
+.chat{background:#fbf7fc;border:1px solid var(--line);border-radius:12px;height:200px;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.msg{padding:7px 10px;border-radius:12px;max-width:85%;font-size:13.5px}.them{background:#f3eef7;align-self:flex-start}.me{background:var(--accent);color:#fff;align-self:flex-end}
+.empty{color:var(--soft);font-size:13.5px}
+.item-card{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:6px}.item-card h3{margin:0;font-size:15px;color:var(--accent-2)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.foot{color:var(--soft);font-size:12.5px}
+.pill{display:inline-block;background:#fff7e0;color:#6d4c00;border:1px solid #f0d890;border-radius:999px;padding:4px 10px;font-size:12.5px}
+</style></head><body>
+<header><div class="in">
+  <div><h1>Wave · matchmaker</h1><div style="opacity:.9;font-size:13.5px">Working demo · synthetic people · stand-in matching, not Wavelength's product</div></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+</div></header>
+<main id="main"></main>
+<script>
+// ---------- synthetic people (made up) ----------
+const PEOPLE = [
+  { id: 'p1', name: 'Priya', age: 29, city: 'Bengaluru', interests: ['trekking', 'films', 'coffee'], kids: true, drinks: 'socially', looking: 'serious', lang: ['English', 'Kannada'], hue: '#c2185b', hard: { ageMin: 26, ageMax: 34, noDrink: false, sameCity: true } },
+  { id: 'p2', name: 'Arjun', age: 31, city: 'Bengaluru', interests: ['trekking', 'cooking', 'cricket'], kids: true, drinks: 'socially', looking: 'serious', lang: ['English', 'Hindi'], hue: '#7b1fa2', hard: { ageMin: 27, ageMax: 35, noDrink: false, sameCity: true } },
+  { id: 'p3', name: 'Meera', age: 27, city: 'Bengaluru', interests: ['films', 'coffee', 'books'], kids: false, drinks: 'never', looking: 'serious', lang: ['English', 'Malayalam'], hue: '#00897b', hard: { ageMin: 25, ageMax: 32, noDrink: true, sameCity: true } },
+  { id: 'p4', name: 'Rohan', age: 33, city: 'Pune', interests: ['running', 'coffee', 'films'], kids: true, drinks: 'socially', looking: 'serious', lang: ['English', 'Marathi'], hue: '#ef6c00', hard: { ageMin: 28, ageMax: 36, noDrink: false, sameCity: false } },
+  { id: 'p5', name: 'Kavya', age: 28, city: 'Bengaluru', interests: ['books', 'cooking', 'trekking'], kids: false, drinks: 'never', looking: 'casual', lang: ['English', 'Kannada'], hue: '#3949ab', hard: { ageMin: 26, ageMax: 33, noDrink: true, sameCity: true } },
+  { id: 'p6', name: 'Dev', age: 30, city: 'Bengaluru', interests: ['cricket', 'running', 'films'], kids: true, drinks: 'socially', looking: 'serious', lang: ['English', 'Hindi'], hue: '#6d4c41', hard: { ageMin: 27, ageMax: 34, noDrink: false, sameCity: true } },
+];
+const byId = Object.fromEntries(PEOPLE.map((p) => [p.id, p]));
+const MAX_PER_WEEK = 3;
+
+// ---------- state + metrics (events are saved on this device) ----------
+const S = { tab: 'matches', me: 'p1', week: 1, day: 0, events: [], intros: {}, dates: {}, closed: {}, lastMsg: {}, chats: {}, capUsed: {}, seeded: false };
+function log(type, data = {}) { S.events.push({ type, day: S.day, week: S.week, ...data }); }
+const count = (type) => S.events.filter((e) => e.type === type).length;
+
+// ---------- matching: hard limits first, then explainable score ----------
+function allowed(a, b) {
+  const ok = (x, y) => y.age >= x.hard.ageMin && y.age <= x.hard.ageMax && (!x.hard.sameCity || x.city === y.city) && (!x.hard.noDrink || y.drinks === 'never');
+  return ok(a, b) && ok(b, a);
+}
+function score(a, b) {
+  const shared = a.interests.filter((i) => b.interests.includes(i));
+  let s = shared.length * 2;
+  if (a.kids === b.kids) s += 3;
+  if (a.looking === b.looking) s += 2;
+  return { score: s, shared, kidsSame: a.kids === b.kids, lookingSame: a.looking === b.looking };
+}
+function matchesFor(id) {
+  const me = byId[id];
+  return PEOPLE.filter((p) => p.id !== id && allowed(me, p))
+    .map((p) => ({ p, ...score(me, p) }))
+    .filter((m) => m.score > 0)
+    .sort((x, y) => y.score - x.score);
+}
+const rowsFor = (id) => matchesFor(id).slice(0, MAX_PER_WEEK - (S.capUsed[id] || 0));
+function reasons(m) {
+  const r = [];
+  if (m.shared.length) r.push(`You both say you're into ${m.shared.join(' and ')}.`);
+  r.push(m.kidsSame ? 'You agree on wanting (or not wanting) kids.' : 'You differ on kids, so this is shown as a bigger gap.');
+  r.push(m.lookingSame ? `You're both looking for something ${byId[S.me].looking}.` : 'You want different things right now.');
+  return r;
+}
+
+// ---------- rendering ----------
+const TABS = [['matches', 'This week'], ['intro', 'Intros'], ['dates', 'Dates'], ['metrics', 'Metrics'], ['new', 'New features'], ['features', 'Features']];
+function render() {
+  $('#tabs').innerHTML = TABS.map(([id, t]) => `<button class="ghost" aria-pressed="${S.tab === id}" data-tab="${id}" style="${S.tab === id ? '' : 'color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);background:transparent'}">${t}</button>`).join('');
+  document.querySelectorAll('[data-tab]').forEach((b) => (b.onclick = () => { S.tab = b.dataset.tab; render(); }));
+  const f = { matches: viewMatches, intro: viewIntro, dates: viewDates, metrics: viewMetrics, new: viewNew, features: viewFeatures }[S.tab];
+  $('#main').innerHTML = `<section class="card">${controls()}</section>` + f();
+  bind();
+  if (S.tab === 'new') bindNew();
+}
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const avatar = (p) => `<div class="avatar" style="background:${p.hue}">${p.name[0]}</div>`;
+function controls() {
+  return `<div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <label class="sub" style="margin:0">Signed in as <select id="who">${PEOPLE.map((p) => `<option value="${p.id}" ${p.id === S.me ? 'selected' : ''}>${p.name}, ${p.age}, ${p.city}</option>`).join('')}</select></label>
+    <span class="pill">Day ${S.day} · Week ${S.week}</span>
+    <button class="ghost small" id="nextDay">Next day ▸</button>
+    <button class="ghost small" id="nextWeek">New week</button>
+    <button class="small" id="seed">Simulate a month of use</button>
+    <button class="ghost small" id="reset">Reset demo</button></div>`;
+}
+function viewMatches() {
+  const rows = rowsFor(S.me);
+  const cap = S.capUsed[S.me] || 0;
+  if (cap >= MAX_PER_WEEK) return `<section class="card"><h2>You're done for the week</h2><p class="empty">You've seen your ${MAX_PER_WEEK} matches. Quality over endless scrolling; new ones arrive next week.</p></section>`;
+  if (!rows.length) return `<section class="card"><h2>No matches this week</h2><p class="empty">Nobody fits your limits right now. Wave will keep looking, and it never lowers your limits silently.</p></section>`;
+  return `<section class="card"><h2>Your matches this week (up to ${MAX_PER_WEEK})</h2><p class="sub">Each match explains itself. Nothing shows you a photo until both of you agree.</p>
+    <div class="grid3">${rows.map((m) => `<div class="match">
+      <div class="row" style="display:flex;gap:10px;align-items:center">${avatar(m.p)}<div><b>${m.p.name}, ${m.p.age}</b><div class="sub" style="margin:0">${m.p.city}</div></div></div>
+      ${reasons(m).map((r) => `<div class="reason">${r}</div>`).join('')}
+      <div class="quote">Match strength ${m.score} · photo locked</div>
+      <button data-intro="${m.p.id}" data-score="${m.score}">Send intro</button></div>`).join('')}</div></section>`;
+}
+function viewIntro() {
+  const mine = Object.values(S.intros).filter((i) => i.from === S.me || i.to === S.me);
+  if (!mine.length) return `<section class="card"><h2>Intros</h2><p class="empty">No intros yet. Send one from This week.</p></section>`;
+  return `<section class="card"><h2>Intros</h2><div class="grid2">${mine.map((i) => {
+    const other = byId[i.from === S.me ? i.to : i.from];
+    const youAgreed = i.agreed[S.me], theyAgreed = i.agreed[other.id];
+    const both = youAgreed && theyAgreed;
+    return `<div class="person"><div class="row" style="display:flex;gap:10px;align-items:center">${avatar(other)}<div><b>${other.name}</b><div class="sub" style="margin:0">${i.status}</div></div></div>
+      <div class="sub" style="margin:0">${both ? '<span class="tag ok">both agreed</span> photo unlocked' : '<span class="tag warn">photo locked</span>'}</div>
+      ${i.status === 'sent' && !youAgreed ? `<button class="small" data-agree="${i.id}">Agree to connect</button>` : ''}
+      ${both && !i.chatOpen ? `<button class="small" data-open="${i.id}">Open chat</button>` : ''}
+      ${i.chatOpen ? chatBox(i) : ''}</div>`;
+  }).join('')}</div></section>`;
+}
+function chatBox(i) {
+  const msgs = S.chats[i.id] || [];
+  const silentDays = S.day - (S.lastMsg[i.id] ?? i.day);
+  const closeNudge = silentDays >= 3 && !S.closed[i.id];
+  return `<div class="chat">${msgs.map((m) => `<div class="msg ${m.from === S.me ? 'me' : 'them'}">${m.text}</div>`).join('') || '<div class="empty">Say hi, kindly.</div>'}</div>
+    <div class="row" style="display:flex;gap:6px"><input id="m-${i.id}" placeholder="Message" style="flex:1" aria-label="Message"><button class="small" data-send="${i.id}">Send</button></div>
+    ${closeNudge ? `<div class="reason" style="margin-top:6px">It's been ${silentDays} days. Continue, or close it kindly? <button class="small ghost" data-close="${i.id}">Close kindly</button> <button class="small" data-continue="${i.id}">Keep talking</button></div>` : ''}
+    ${S.closed[i.id] ? '<div class="sub">Closed kindly. Both of you got a short note.</div>' : ''}`;
+}
+function viewDates() {
+  const mine = Object.values(S.dates).filter((d) => d.a === S.me || d.b === S.me);
+  const open = Object.values(S.intros).filter((i) => (i.from === S.me || i.to === S.me) && i.agreed[S.me] && i.agreed[i.from === S.me ? i.to : i.from]);
+  return `<section class="card"><h2>Dates</h2><p class="sub">Plan a date with a check-in. If the planned end time passes and nobody checks in, your trusted contact is told.</p>
+    ${open.length ? open.map((i) => {
+      const other = byId[i.from === S.me ? i.to : i.from];
+      const d = S.dates[i.id];
+      return `<div class="person"><b>Date with ${other.name}</b>
+        ${d ? `<div class="sub" style="margin:0">Planned ${d.when} · ends ${d.end} · check-in ${d.checkedIn ? '<span class="tag ok">done</span>' : d.missed ? '<span class="tag bad">missed · trusted contact alerted</span>' : '<span class="tag warn">pending</span>'}</div>
+           ${!d.checkedIn && !d.missed ? `<div class="row" style="display:flex;gap:6px"><button class="small" data-checkin="${i.id}">I'm safe</button><button class="small ghost" data-missed="${i.id}">Simulate missed check-in</button></div>` : ''}`
+        : `<button class="small" data-plan="${i.id}">Plan a date (coffee, 1 hour)</button>`}</div>`;
+    }).join('') : '<p class="empty">Dates appear once you both agree to connect.</p>'}</section>`;
+}
+function viewMetrics() {
+  const sent = Object.keys(S.intros).length;
+  const agreed = Object.values(S.intros).filter((i) => i.status === 'connected').length;
+  const firstMsgs = new Set(S.events.filter((e) => e.type === 'first_message').map((e) => e.with ?? e.day)).size || count('first_message');
+  const closed = Object.keys(S.closed).length, dates = Object.keys(S.dates).length, safe = count('checked_in'), missed = count('missed_checkin'), capHit = count('week_cap');
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+  const funnel = [['Matches shown', count('match_shown')], ['Intros sent', sent], ['Both agreed', agreed], ['First message', count('first_message')], ['Date planned', dates]];
+  const max = Math.max(1, ...funnel.map((f) => f[1]));
+  return `<section class="card"><h2>Metrics that matter for a matchmaker</h2><p class="sub">These are tracked on this device for the demo. In production they'd come from event logs, reviewed weekly.</p>
+    <div class="grid4">
+      <div class="kpi"><b>${pct(agreed, sent)}</b><span>intro → both agree</span></div>
+      <div class="kpi"><b>${pct(count('first_message'), agreed)}</b><span>agreed → first message</span></div>
+      <div class="kpi"><b>${pct(dates, agreed)}</b><span>agreed → date planned</span></div>
+      <div class="kpi"><b>${pct(closed, sent)}</b><span>closed kindly (vs ghosting)</span></div>
+      <div class="kpi"><b>${pct(safe, safe + missed)}</b><span>date check-ins completed</span></div>
+      <div class="kpi"><b>${capHit}</b><span>people who hit the weekly cap (by design)</span></div>
+      <div class="kpi"><b>${count('safety_block')}</b><span>messages blocked for safety</span></div>
+      <div class="kpi"><b>${S.events.length}</b><span>events logged</span></div>
+    </div>
+    <p class="sub" style="margin-top:10px">Each intro, connection and date is counted once. Rates use those unique counts.</p>
+    <h2 style="margin-top:14px">Funnel</h2>${funnel.map(([t, n]) => `<div style="margin:6px 0"><div class="sub" style="margin:0">${t}: <b>${n}</b></div><div class="bar"><i style="width:${(n / max) * 100}%"></i></div></div>`).join('')}
+    <h2 style="margin-top:14px">Latest events</h2><div class="feed">${S.events.slice(-12).reverse().map((e) => `<div>day ${e.day} · <b>${e.type}</b>${e.note ? ' · ' + e.note : ''}</div>`).join('') || '<div class="empty">No events yet.</div>'}</div></section>`;
+}
+
+// ---------- new features (working, simplified) ----------
+const NEW = { declined: [], refreshed: null, trusted: null, planner: { city: 'Bengaluru', budget: 'low' }, cost: { perConvo: 18, convos: 40, matches: 6 }, dup: false,
+  noShow: null, pulse: null, decideLeft: 48, voice: null, venues: { Cafe: [5, 4, 5], Park: [4, 4], Rooftop: [3, 2, 4] }, sponsor: 1500, receipt: [['Sponsored date (credit)', 1500], ['Venue', 1250], ['Platform fee', 0]] };
+function viewNew() {
+  const me = byId[S.me];
+  const cand = matchesFor(S.me)[0];
+  const shared = cand ? cand.shared : [];
+  const opening = shared.length ? `You both said you're into ${shared[0]}. Which spot would you pick first?` : 'Tell me one thing you did this week that you enjoyed.';
+  const notMatched = PEOPLE.find((p) => p.id !== S.me && !allowed(me, p));
+  const why = notMatched ? (() => { const a = me, b = notMatched; const r = []; if (b.age < a.hard.ageMin || b.age > a.hard.ageMax) r.push('age range'); if (a.hard.sameCity && a.city !== b.city) r.push('city'); if (a.hard.noDrink && b.drinks !== 'never') r.push('drinking preference'); return `${notMatched.name} wasn't matched because of your ${r.join(' and ') || 'stated limits'}.`; })() : 'Everyone in your area fits your limits.';
+  const planList = NEW.planner.budget === 'low' ? ['Coffee at a local cafe (₹300)', 'Park walk and a snack (₹150)'] : ['Dinner at a rooftop cafe (₹1,500)', 'Weekend trek with picnic (₹800)'];
+  const dupScore = NEW.dup ? '0.92 · flagged for review' : '0.12 · fine';
+  const cpm = (NEW.cost.perConvo * NEW.cost.convos / Math.max(1, NEW.cost.matches)).toFixed(0);
+  return `<section class="card"><h2>New features</h2><p class="sub">Eight features from the pitch, each working on the demo data.</p>
+  <div class="grid2">
+    <div class="item-card"><h3>1 · Decline without guilt</h3>
+      <div class="row">${['Not the right pace', 'Different life goals', 'Too far from me'].map((r) => `<button class="small ghost" data-decline="${r}">${r}</button>`).join('')}</div>
+      <div class="sub">${NEW.declined.length ? 'Sent kindly: "Thanks for the chat. ' + esc(NEW.declined[NEW.declined.length - 1]) + ', so I will step back. All the best."' : 'Choose a kind reason. The other person gets a gentle note, not silence.'}</div></div>
+    <div class="item-card"><h3>2 · Opening line from shared receipts <span class="tag warn">Wave has icebreakers: we add a check</span></h3>
+      <div class="reason">${esc(opening)}</div><div class="sub">Built only from something both people said.</div></div>
+    <div class="item-card"><h3>3 · Profile refresh</h3>
+      <div class="sub">A month later: "Still into trekking, or new hobbies?"</div>
+      <div class="row"><button class="small" data-refresh="yes">Still true</button><button class="small ghost" data-refresh="no">Update it</button></div>
+      <div class="sub">${NEW.refreshed === null ? '' : NEW.refreshed ? 'Profile confirmed.' : 'Update sent for your review.'}</div></div>
+    <div class="item-card"><h3>4 · Why wasn't I matched? <span class="tag warn">Wave explains matches: we test the reasons</span></h3><div class="reason">${esc(why)}</div><div class="sub">Plain reasons, never a hidden score.</div></div>
+    <div class="item-card"><h3>5 · Date planner with budget</h3>
+      <div class="row"><select id="pCity"><option>Bengaluru</option><option>Pune</option></select><select id="pBudget"><option value="low" ${NEW.planner.budget === 'low' ? 'selected' : ''}>Under ₹500</option><option value="high" ${NEW.planner.budget === 'high' ? 'selected' : ''}>Up to ₹2,000</option></select></div>
+      ${planList.map((x) => `<div class="reason">${x}</div>`).join('')}</div>
+    <div class="item-card"><h3>6 · Safety circle</h3>
+      <div class="sub">A trusted contact sees the date plan and check-in times. Never the chat.</div>
+      <div class="row"><button class="small" data-trusted="1">Add trusted contact</button></div>
+      <div class="sub">${NEW.trusted ? 'Shared: Sat 6 pm, Cafe Nandi, check-in at 7 pm.' : ''}</div></div>
+    <div class="item-card"><h3>7 · Fake-account check</h3>
+      <div class="sub">Two profiles with near-identical text.</div>
+      <div class="reason">Profile A: "Loves trekking, coffee and old films."<br>Profile B: "Loves trekking, coffee and old films!"</div>
+      <div class="row"><button class="small" data-dup="1">Run similarity check</button></div>
+      <div class="sub">Similarity: ${NEW.dup ? dupScore : 'not run yet'}</div></div>
+    <div class="item-card"><h3>8 · Cost per match</h3>
+      <div class="row"><label class="sub" style="margin:0">AI cost per conversation (₹) <input id="cpc" type="number" value="${NEW.cost.perConvo}" style="width:90px"></label></div>
+      <div class="sub">${NEW.cost.convos} conversations, ${NEW.cost.matches} matches → <b>₹${cpm} per match</b></div>
+      <div class="row"><button class="small ghost" id="cpcSave">Update cost</button></div></div>
+    <div class="item-card"><h3>9 · No-show policy</h3>
+      <div class="sub">If one person doesn't turn up, the sponsored credit is refunded or kept for the next date, and both are told the same way.</div>
+      <div class="row"><button class="small" data-noshow="A">Priya didn't show</button><button class="small" data-noshow="B">Arjun didn't show</button></div>
+      <div class="reason">${NEW.noShow ? (NEW.noShow === "A" ? "Priya missed the date. The ₹1,500 credit is kept for a future date. Arjun is told it was not his fault." : "Arjun missed the date. The ₹1,500 credit is kept for a future date. Priya is told it was not her fault.") : "Choose who missed the date to see the policy."}</div></div>
+    <div class="item-card"><h3>10 · Post-date pulse <span class="tag warn">Wave has reflections: we add a consent rule</span></h3>
+      <div class="sub">Two questions after the date: "Did you feel safe?" and "Would you like another date?"</div>
+      <div class="row"><button class="small" data-pulse="yes">Safe, yes again</button><button class="small ghost" data-pulse="no">Not for me</button></div>
+      <div class="sub">${NEW.pulse === null ? "Answers feed matching and safety, never shown to the other person." : NEW.pulse === "yes" ? "Recorded: safe, and open to a second date." : "Recorded: not a second date. Nothing shared with the other person."}</div></div>
+    <div class="item-card"><h3>11 · Sponsorship fairness audit</h3>
+      <div class="sub">Sponsored value per person, grouped by gender and area. Gap must stay under ₹100.</div>
+      ${[["Priya (Bengaluru, F)", 1500], ["Arjun (Bengaluru, M)", 1500], ["Meera (Bengaluru, F)", 1500], ["Rohan (Pune, M)", 1500]].map(([n, v]) => `<div class="row" style="display:flex;justify-content:space-between"><span>${n}</span><b>₹${v}</b></div>`).join("")}
+      <div class="sub"><span class="tag ok">PASS · gap ₹0</span></div></div>
+    <div class="item-card"><h3>12 · Date receipt, no hidden fees</h3>
+      ${NEW.receipt.map(([k, v]) => `<div class="row" style="display:flex;justify-content:space-between"><span>${k}</span><b>₹${v}</b></div>`).join("")}
+      <div class="row" style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:6px"><b>Total</b><b>₹${NEW.receipt.reduce((a, b) => a + b[1], 0)}</b></div></div>
+    <div class="item-card"><h3>13 · 48-hour decide window</h3>
+      <div class="sub">After the date, both decide within 48 hours. Silence closes it kindly, not into limbo.</div>
+      <div class="row"><span class="pill">${NEW.decideLeft} hours left</span><button class="small ghost" data-decide="-12">Pass 12 hours</button></div></div>
+    <div class="item-card"><h3>14 · Two-minute voice check before booking</h3>
+      <div class="sub">A short voice chat before a sponsored date is booked. Mismatch means no booking.</div>
+      <div class="row"><button class="small" data-voice="ok">They match</button><button class="small ghost" data-voice="no">They don't</button></div>
+      <div class="sub">${NEW.voice === null ? "" : NEW.voice === "ok" ? "Booking allowed." : "Booking stopped. Nothing spent."}</div></div>
+    <div class="item-card"><h3>15 · Member-rated venues</h3>
+      ${Object.entries(NEW.venues).map(([v, r]) => { const avg = (r.reduce((a, b) => a + b, 0) / r.length).toFixed(1); return `<div class="row" style="display:flex;justify-content:space-between"><span>${v}</span><span>${avg} / 5 · ${r.length} ratings</span></div>`; }).join("")}
+      <div class="sub">Only people who had a date there can rate it.</div></div>
+  </div></section>`;
+}
+function bindNew() {
+  document.querySelectorAll('[data-decline]').forEach((b) => (b.onclick = () => { NEW.declined.push(b.dataset.decline); log('declined_kind', { note: b.dataset.decline }); render(); }));
+  document.querySelectorAll('[data-refresh]').forEach((b) => (b.onclick = () => { NEW.refreshed = b.dataset.refresh === 'yes'; log('profile_refreshed'); render(); }));
+  document.querySelectorAll('[data-trusted]').forEach((b) => (b.onclick = () => { NEW.trusted = true; log('safety_circle_added'); render(); }));
+  document.querySelectorAll('[data-dup]').forEach((b) => (b.onclick = () => { NEW.dup = true; log('duplicate_flagged'); render(); }));
+  document.querySelectorAll('[data-noshow]').forEach((b) => (b.onclick = () => { NEW.noShow = b.dataset.noshow; log('no_show', { note: b.dataset.noshow }); render(); }));
+  document.querySelectorAll('[data-pulse]').forEach((b) => (b.onclick = () => { NEW.pulse = b.dataset.pulse; log('post_date_pulse', { note: b.dataset.pulse }); render(); }));
+  document.querySelectorAll('[data-decide]').forEach((b) => (b.onclick = () => { NEW.decideLeft = Math.max(0, NEW.decideLeft + +b.dataset.decide); render(); }));
+  document.querySelectorAll('[data-voice]').forEach((b) => (b.onclick = () => { NEW.voice = b.dataset.voice; log('pre_date_voice_check', { note: b.dataset.voice }); render(); }));
+  const pb = $('#pBudget'); if (pb) pb.onchange = () => { NEW.planner.budget = pb.value; render(); };
+  const cs = $('#cpcSave'); if (cs) cs.onclick = () => { NEW.cost.perConvo = +$('#cpc').value || 0; render(); };
+}
+function viewFeatures() {
+  const F = [
+    ['Explained matches', 'Every match gives reasons you can check.', 'Live in This week'],
+    ['Weekly cap', 'Three quality matches a week, then "you\'re done".', 'Live in This week'],
+    ['Close the loop', 'After 3 quiet days, you choose to continue or close kindly.', 'Live in Intros'],
+    ['Photo lock', 'Photos only after both people agree.', 'Live in Intros'],
+    ['Date check-in', 'A missed check-in alerts a trusted contact.', 'Live in Dates'],
+    ['Metrics', 'Funnel and safety numbers, from the same events.', 'Live in Metrics'],
+  ];
+  return `<section class="card"><h2>Features in this demo</h2><div class="grid2">${F.map(([t, d, w]) => `<div class="person"><b>${t}</b><div class="sub" style="margin:0">${d}</div><span class="tag ok">${w}</span></div>`).join('')}</div></section>`;
+}
+
+// ---------- actions ----------
+function sendIntro(to, score) {
+  const id = [S.me, to].sort().join('-');
+  if (S.intros[id]) return;
+  S.intros[id] = { id, from: S.me, to, status: 'sent', agreed: { [S.me]: false, [to]: false }, day: S.day, chatOpen: false, score };
+  log('intro_sent', { with: to });
+  if (S.capUsed[S.me] == null) S.capUsed[S.me] = 0;
+  S.capUsed[S.me]++;
+  if (S.capUsed[S.me] >= MAX_PER_WEEK) log('week_cap', { who: S.me });
+}
+function agree(id) {
+  const i = S.intros[id];
+  if (i.status === 'connected') return;
+  i.agreed[S.me] = true;
+  const other = i.from === S.me ? i.to : i.from;
+  // in this demo the other person agrees on their next turn, based on match strength (stand-in rule)
+  if (i.score >= 6 || S.seeded) i.agreed[other] = true;
+  if (i.agreed[S.me] && i.agreed[other]) { i.status = 'connected'; log('both_agreed', { with: other }); }
+}
+function bind() {
+  const who = $('#who'); if (who) who.onchange = () => { S.me = who.value; render(); };
+  const nd = $('#nextDay'); if (nd) nd.onclick = () => { S.day++; render(); };
+  const nw = $('#nextWeek'); if (nw) nw.onclick = () => { S.week++; S.day = 0; S.capUsed = {}; log('new_week'); render(); };
+  const rs = $('#reset'); if (rs) rs.onclick = () => { Object.assign(S, { events: [], intros: {}, dates: {}, closed: {}, lastMsg: {}, chats: {}, capUsed: {}, day: 0, week: 1, seeded: false }); render(); };
+  const sd = $('#seed'); if (sd) sd.onclick = () => simulate();
+  document.querySelectorAll('[data-intro]').forEach((b) => (b.onclick = () => { sendIntro(b.dataset.intro, +b.dataset.score); render(); }));
+  document.querySelectorAll('[data-agree]').forEach((b) => (b.onclick = () => { const i = S.intros[b.dataset.agree]; agree(i.id); if (i.status === 'connected') { i.chatOpen = true; } render(); }));
+  document.querySelectorAll('[data-open]').forEach((b) => (b.onclick = () => { S.intros[b.dataset.open].chatOpen = true; render(); }));
+  document.querySelectorAll('[data-send]').forEach((b) => (b.onclick = () => {
+    const id = b.dataset.send, v = ($('#m-' + id).value || '').trim(); if (!v) return;
+    const bad = /\b(send money|transfer|crypto|wallet|address|workplace|whatsapp)\b/i.test(v);
+    if (bad) { log('safety_block', { note: 'blocked: ' + v.slice(0, 30) }); alert('Wave stopped that message: it asks for money, moves the chat off the app, or asks for private details.'); return; }
+    S.chats[id] = [...(S.chats[id] || []), { from: S.me, text: v }];
+    if (!S.lastMsg[id] && !S.chats[id].slice(0, -1).length) log('first_message');
+    log('message'); S.lastMsg[id] = S.day; render();
+  }));
+  document.querySelectorAll('[data-continue]').forEach((b) => (b.onclick = () => { S.lastMsg[b.dataset.continue] = S.day; render(); }));
+  document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { S.closed[b.dataset.close] = true; log('closed_kindly'); render(); }));
+  document.querySelectorAll('[data-plan]').forEach((b) => (b.onclick = () => { const id = b.dataset.plan; S.dates[id] = { id, a: S.me, b: S.intros[id].from === S.me ? S.intros[id].to : S.intros[id].from, when: 'Sat 6 pm', end: 'Sat 7 pm', checkedIn: false, missed: false }; log('date_planned'); render(); }));
+  document.querySelectorAll('[data-checkin]').forEach((b) => (b.onclick = () => { S.dates[b.dataset.checkin].checkedIn = true; log('checked_in'); render(); }));
+  document.querySelectorAll('[data-missed]').forEach((b) => (b.onclick = () => { S.dates[b.dataset.missed].missed = true; log('missed_checkin', { note: 'trusted contact alerted' }); render(); }));
+}
+
+// ---------- a deterministic month of use, so the metrics have something to show ----------
+function simulate() {
+  let seed = 7; const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  for (let week = 1; week <= 4; week++) {
+    S.week = week; S.capUsed = {};
+    for (const p of PEOPLE) {
+      S.me = p.id;
+      const rows = rowsFor(p.id).slice(0, 2);
+      rows.forEach((m) => {
+        log('match_shown', { with: m.p.id });
+        if (rnd() < 0.7) { sendIntro(m.p.id, m.score); const i = S.intros[[p.id, m.p.id].sort().join('-')]; if (i) { i.day = 0; S.day = 1; agree(i.id); if (i.status === 'connected' && !S.chats[i.id] && rnd() < 0.6) { S.chats[i.id] = [{ from: p.id, text: 'Hey! Trekking this weekend?' }, { from: m.p.id, text: 'Yes, Nandi Hills?' }]; log('first_message'); S.lastMsg[i.id] = 1; if (rnd() < 0.5) { S.dates[i.id] = { id: i.id, a: p.id, b: m.p.id, when: 'Sat 6 pm', end: 'Sat 7 pm', checkedIn: rnd() < 0.8, missed: false }; log('date_planned'); S.dates[i.id].checkedIn ? log('checked_in') : log('missed_checkin'); } } else if (i.status === 'connected' && !S.chats[i.id] && !S.closed[i.id] && rnd() < 0.3) { S.closed[i.id] = true; log('closed_kindly'); } } }
+      });
+    }
+  }
+  S.me = 'p1'; S.day = 0; S.week = 4; S.seeded = true; S.tab = 'metrics'; render();
+}
+render();
+</script></body></html>

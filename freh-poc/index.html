@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>freH Feature Lab</title>
+<meta name="description" content="A working POC of five growth features for freH, by Unnati Chhabra.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f1;--card:#ffffff;--ink:#17201b;--soft:#5d6862;--faint:#8b958f;--line:#e3e8e2;
+  --green:#1f6b45;--green-2:#2e8a5c;--mint:#7fbf98;--mint-bg:#e7f3eb;--amber:#c9861a;--amber-bg:#fbf0dc;--red:#c0392b;
+  --wa-bg:#efe7dd;--wa-me:#d9fdd3;--wa-bot:#ffffff;--wa-ink:#111b21;--wa-time:#667781;--tick:#53bdeb;
+  --shadow:0 1px 2px rgba(16,40,28,.06),0 12px 32px rgba(16,40,28,.08);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1310;--card:#151d18;--ink:#eaf0ec;--soft:#a3ada7;--faint:#7d877f;--line:#26302a;--mint-bg:#1b3125;--amber-bg:#3a2c12;
+  --wa-bg:#0b141a;--wa-me:#005c4b;--wa-bot:#202c33;--wa-ink:#e9edef;--wa-time:#8696a0;--shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0d1310;--card:#151d18;--ink:#eaf0ec;--soft:#a3ada7;--faint:#7d877f;--line:#26302a;--mint-bg:#1b3125;--amber-bg:#3a2c12;
+  --wa-bg:#0b141a;--wa-me:#005c4b;--wa-bot:#202c33;--wa-ink:#e9edef;--wa-time:#8696a0;--shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit}
+
+/* ---------- hero ---------- */
+.hero{background:radial-gradient(1200px 400px at 85% -10%,rgba(127,191,152,.45),transparent 60%),linear-gradient(135deg,#123f29,#1f6b45 55%,#2e8a5c);color:#fff;padding:34px 16px 92px}
+.hero-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+.brand{display:inline-flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--green);display:grid;place-items:center;font-family:Fraunces,serif;font-size:20px}
+.brand small{font-weight:500;opacity:.75;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px}
+.hero h1{font-family:Fraunces,serif;font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.05;margin:18px 0 10px;letter-spacing:-.01em}
+.hero p{margin:0;max-width:620px;opacity:.88;font-size:16px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:10px 16px;backdrop-filter:blur(4px)}
+.stat b{display:block;font-size:22px;line-height:1.1}.stat span{font-size:12px;opacity:.8}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1180px;margin:-62px auto 0;padding:0 16px 40px;display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}}
+nav{background:var(--card);border-radius:22px;padding:10px;box-shadow:var(--shadow);display:grid;gap:4px;position:sticky;top:14px}
+@media (max-width:860px){nav{position:static;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);overflow-x:auto}}
+.tab{all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;transition:background .15s}
+.tab:hover{background:var(--bg)}
+.tab .ic{width:40px;height:40px;flex:0 0 40px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:var(--mint-bg)}
+.tab b{display:block;font-size:14px;line-height:1.25}.tab span{display:block;color:var(--faint);font-size:12px}
+.tab[aria-selected="true"]{background:var(--green);color:#fff}.tab[aria-selected="true"] span{color:rgba(255,255,255,.75)}
+.tab[aria-selected="true"] .ic{background:rgba(255,255,255,.18)}
+.tab:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.stage{display:grid;grid-template-columns:390px 1fr;gap:22px;align-items:start;animation:fade .25s ease}
+@media (max-width:1100px){.stage{grid-template-columns:1fr;justify-items:center}}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- phone ---------- */
+.phone{width:min(390px,100%);background:#0f1311;border-radius:48px;padding:12px;box-shadow:0 30px 60px rgba(10,30,20,.28),inset 0 0 0 2px #2a302c}
+.screen{position:relative;border-radius:38px;overflow:hidden;height:min(720px,calc(100svh - 120px));min-height:560px;display:flex;flex-direction:column;background:var(--card)}
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 6px;font-size:13px;font-weight:700;background:var(--green);color:#fff}
+.status .notch{position:absolute;left:50%;top:9px;transform:translateX(-50%);width:104px;height:28px;border-radius:20px;background:#0f1311}
+.appbar{display:flex;align-items:center;gap:10px;padding:8px 14px 12px;background:var(--green);color:#fff}
+.appbar .back{opacity:.9;font-size:20px;line-height:1}
+.appbar .av{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--green);display:grid;place-items:center;font-weight:800;font-family:Fraunces,serif;font-size:18px;flex:0 0 38px}
+.appbar b{display:block;font-size:15.5px}.appbar small{display:block;opacity:.85;font-size:12px}
+.body{flex:1;padding:14px;overflow:auto;scroll-behavior:smooth}
+.body::-webkit-scrollbar{width:0}
+
+/* whatsapp */
+.wa{background-color:var(--wa-bg);background-image:radial-gradient(rgba(0,0,0,.035) 1.2px,transparent 1.3px);background-size:18px 18px;display:flex;flex-direction:column;gap:8px}
+.day{align-self:center;background:var(--card);color:var(--wa-time);font-size:11.5px;padding:3px 10px;border-radius:8px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.msg{position:relative;max-width:88%;padding:7px 9px 18px;border-radius:10px;font-size:14px;line-height:1.42;color:var(--wa-ink);box-shadow:0 1px 0 rgba(0,0,0,.08);white-space:pre-wrap;animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+.msg.me{align-self:flex-end;background:var(--wa-me);border-top-right-radius:3px}
+.msg.bot{align-self:flex-start;background:var(--wa-bot);border-top-left-radius:3px}
+.msg .time{position:absolute;right:8px;bottom:3px;font-size:10.5px;color:var(--wa-time)}
+.msg.me .time::after{content:" ✓✓";color:var(--tick);letter-spacing:-2px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 2px;background:var(--wa-bg)}
+.chips::-webkit-scrollbar{height:0}
+.chip{all:unset;cursor:pointer;white-space:nowrap;font-size:12.5px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.chip:hover{border-color:var(--green)}
+.compose{display:flex;gap:8px;padding:8px 10px 14px;background:var(--wa-bg)}
+.compose input{flex:1;border:0;border-radius:999px;padding:11px 16px;font:inherit;font-size:14px;background:var(--card);color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.compose input:focus{outline:2px solid var(--mint)}
+.send{all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:18px}
+
+/* meal card */
+.meal{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:9px;margin:7px 0 0;background:var(--card);white-space:normal}
+.meal .tile{width:46px;height:46px;flex:0 0 46px;border-radius:12px;display:grid;place-items:center;font-size:24px;background:var(--mint-bg)}
+.meal .nm{font-weight:700;font-size:13.5px;line-height:1.25;color:var(--ink)}
+.meal .sub{color:var(--soft);font-size:11.5px;margin-top:1px}
+.macro{display:flex;height:5px;border-radius:999px;overflow:hidden;margin-top:6px;background:var(--line)}
+.macro i:nth-child(1){background:var(--green)}.macro i:nth-child(2){background:#e3b866}.macro i:nth-child(3){background:#e98a6b}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.tag{font-size:10.5px;font-weight:700;background:var(--mint-bg);color:var(--green);border-radius:6px;padding:1px 6px}
+.tag.warn{background:var(--amber-bg);color:var(--amber)}
+.price{font-weight:800;font-size:13px;white-space:nowrap}
+
+/* buttons */
+.btn{all:unset;cursor:pointer;background:var(--green);color:#fff;border-radius:12px;padding:11px 14px;font-weight:700;font-size:14px;text-align:center;transition:transform .1s,background .15s}
+.btn:hover{background:var(--green-2)}.btn:active{transform:scale(.98)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn.ghost{background:transparent;color:var(--green);box-shadow:inset 0 0 0 1.5px var(--green)}
+.btn.block{display:block}
+.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.btn[disabled]{opacity:.4;cursor:default}
+
+/* side panel */
+.why{background:var(--card);border-radius:22px;padding:24px;box-shadow:var(--shadow);width:100%}
+.why .eyebrow{font:800 11.5px/1 'DM Sans';letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+.why h2{font-family:Fraunces,serif;font-size:28px;line-height:1.15;margin:8px 0 8px}
+.why .one{color:var(--soft);margin:0 0 14px;font-size:15.5px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.kpi{background:var(--mint-bg);color:var(--green);border-radius:12px;padding:8px 12px;font-size:13px}
+.kpi b{display:block;font-size:15px}
+.why h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:16px 0 8px}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:10px;counter-reset:s}
+.steps li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+.steps li::before{counter-increment:s;content:counter(s);flex:0 0 24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.prod{margin-top:16px;background:var(--bg);border-radius:14px;padding:12px 14px;font-size:13.5px;color:var(--soft)}
+.prod b{color:var(--ink)}
+
+/* features misc */
+.seg{display:flex;background:var(--bg);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{all:unset;cursor:pointer;flex:1;text-align:center;padding:7px 8px;font-size:13px;font-weight:700;border-radius:9px;color:var(--soft)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--green);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.h{font-weight:800;font-size:16px;margin:2px 0 4px}.muted{color:var(--soft);font-size:13px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.progress{height:10px;background:var(--line);border-radius:999px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--mint));transition:width .5s}
+.person{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;animation:pop .25s ease}
+.person .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff}
+.ringwrap{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:16px;padding:12px;margin-bottom:12px}
+.ring{width:64px;height:64px}
+.banner{display:flex;gap:8px;align-items:center;background:var(--mint-bg);color:var(--green);border-radius:12px;padding:10px 12px;font-weight:700;font-size:13px;margin-top:12px}
+.daypick{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.daypick b{font-size:12px;color:var(--soft)}
+.daypick select{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px}
+.earn{background:linear-gradient(135deg,var(--green),var(--green-2));color:#fff;border-radius:16px;padding:12px 14px;margin:12px 0}
+.earn b{font-size:24px}
+.card-r{background:radial-gradient(260px 160px at 100% 0,rgba(255,255,255,.18),transparent 60%),linear-gradient(160deg,#164e33,#1f6b45 50%,#2e8a5c);color:#fff;border-radius:24px;padding:20px;box-shadow:0 16px 30px rgba(31,107,69,.35)}
+.card-r .big{font-family:Fraunces,serif;font-size:56px;line-height:1}
+.card-r .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.card-r .grid3 div{background:rgba(255,255,255,.12);border-radius:12px;padding:8px;font-size:12px}
+.card-r .grid3 b{display:block;font-size:18px}
+.card-w{position:relative;overflow:hidden;background:#101512;color:#fff;border-radius:24px;padding:22px;min-height:470px;display:flex;flex-direction:column;gap:16px}
+.card-w .blob{position:absolute;border-radius:50%;filter:blur(2px)}
+.card-w > *{position:relative}
+.card-w .big{font-family:Fraunces,serif;font-size:58px;line-height:.95}
+.notif{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 12px 28px rgba(0,0,0,.14);margin:12px 0;animation:pop .3s ease;border:1px solid var(--line)}
+.notif .top{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--soft)}
+.notif .wa-ic{width:20px;height:20px;border-radius:6px;background:#25d366;color:#fff;display:grid;place-items:center;font-size:11px}
+.hist{display:grid;gap:6px}
+.hist div{display:grid;grid-template-columns:42px 50px 1fr;font-size:12.5px;align-items:center;padding:7px 10px;border-radius:10px;background:var(--bg)}
+.hist div.hit{background:var(--mint-bg);font-weight:700}
+@media (max-width:560px){.hero{padding-bottom:86px}.stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.stat{padding:10px 8px}.stat b{font-size:19px}.stat span{font-size:11px}.hero h1{font-size:30px}.hero p{font-size:15px}.wrap{margin-top:-58px}.phone{border-radius:40px;padding:9px}.screen{border-radius:31px}}
+footer{max-width:1180px;margin:0 auto 40px;padding:0 16px;color:var(--faint);font-size:13px}
+a{color:var(--green)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-in">
+    <div>
+      <div class="brand"><span class="logo">f</span><span>freH <small>· Feature Lab</small></span></div>
+      <h1>Five growth features,<br>working.</h1>
+      <p>A clickable proof of concept for the features in my growth proposal. Pick one and try it in the phone. Sample menu and data, not freH's real menu.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>5</b><span>features you can click</span></div>
+      <div class="stat"><b>75+</b><span>orders/week target</span></div>
+      <div class="stat"><b>35%</b><span>30-day repeat target</span></div>
+    </div>
+  </div>
+</section>
+<div class="wrap">
+  <nav role="tablist" aria-label="Features" id="nav"></nav>
+  <main id="main"></main>
+</div>
+<footer>Built by Unnati Chhabra · <a href="https://www.unnati-chhabra.xyz">unnati-chhabra.xyz</a> · Sample data only. The assistant runs on fixed rules (no AI calls), so it never invents a dish, macro or price.</footer>
+
+<script>
+// ---------- sample menu (illustrative, not freH's real menu) ----------
+const MENU = [
+  { id: 'paneer', name: 'Paneer Tikka Protein Bowl', em: '🥗', price: 289, kcal: 520, protein: 38, carbs: 42, fat: 20, veg: true, allergens: ['dairy'], kitchen: 'HSR Kitchen 2', audit: '12 Oct', tint: '#e7f3eb' },
+  { id: 'chicken', name: 'Grilled Chicken & Quinoa', em: '🍗', price: 329, kcal: 560, protein: 46, carbs: 48, fat: 16, veg: false, allergens: [], kitchen: 'HSR Kitchen 1', audit: '9 Oct', tint: '#fbf0dc' },
+  { id: 'satay', name: 'Chicken Satay Rice Bowl', em: '🥜', price: 309, kcal: 610, protein: 40, carbs: 58, fat: 22, veg: false, allergens: ['peanut'], kitchen: 'HSR Kitchen 1', audit: '9 Oct', tint: '#f6e6d6' },
+  { id: 'tofu', name: 'Sesame Tofu Stir-fry', em: '🍜', price: 259, kcal: 470, protein: 28, carbs: 50, fat: 16, veg: true, allergens: ['soy', 'sesame'], kitchen: 'HSR Kitchen 3', audit: '14 Oct', tint: '#f3ecdf' },
+  { id: 'rajma', name: 'Rajma Brown Rice Bowl', em: '🍛', price: 219, kcal: 480, protein: 22, carbs: 70, fat: 10, veg: true, allergens: [], kitchen: 'HSR Kitchen 2', audit: '12 Oct', tint: '#f8e3dc' },
+  { id: 'egg', name: 'Egg White Bhurji Wrap', em: '🌯', price: 199, kcal: 390, protein: 32, carbs: 34, fat: 12, veg: false, allergens: ['egg', 'gluten'], kitchen: 'HSR Kitchen 3', audit: '14 Oct', tint: '#fbf3d6' },
+  { id: 'fish', name: 'Lemon Herb Fish & Veg', em: '🐟', price: 349, kcal: 450, protein: 44, carbs: 20, fat: 18, veg: false, allergens: ['fish'], kitchen: 'HSR Kitchen 1', audit: '9 Oct', tint: '#e2eef7' },
+  { id: 'smoothie', name: 'Whey Banana Smoothie', em: '🥤', price: 179, kcal: 310, protein: 30, carbs: 36, fat: 6, veg: true, allergens: ['dairy'], kitchen: 'HSR Kitchen 2', audit: '12 Oct', tint: '#f1e8f6' },
+];
+const byId = Object.fromEntries(MENU.map((m) => [m.id, m]));
+const ALLERGEN_WORDS = { peanut: ['peanut', 'groundnut', 'moongfali', 'satay'], dairy: ['dairy', 'milk', 'lactose', 'paneer', 'doodh'], gluten: ['gluten', 'wheat'], egg: ['egg', 'anda'], soy: ['soy', 'soya'], sesame: ['sesame', 'til'], fish: ['fish', 'machli', 'seafood'] };
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+function mealCard(m, extra = '') {
+  const tot = m.protein * 4 + m.carbs * 4 + m.fat * 9;
+  const w = (g, k) => ((g * k) / tot) * 100;
+  return `<div class="meal"><div class="tile" style="${dark() ? '' : `background:${m.tint}`}">${m.em}</div>
+    <div style="flex:1;min-width:0"><div class="nm">${esc(m.name)}</div>
+      <div class="sub">${m.protein} g protein · ${m.kcal} kcal · ${m.kitchen}</div>
+      <div class="macro" title="protein / carbs / fat"><i style="width:${w(m.protein, 4)}%"></i><i style="width:${w(m.carbs, 4)}%"></i><i style="width:${w(m.fat, 9)}%"></i></div>
+      <div class="tags">${m.veg ? '<span class="tag">veg</span>' : ''}${m.allergens.length ? m.allergens.map((a) => `<span class="tag warn">${a}</span>`).join('') : '<span class="tag">no major allergens</span>'}<span class="tag">audited ${m.audit}</span></div></div>
+    <div style="display:grid;gap:6px;justify-items:end"><span class="price">₹${m.price}</span>${extra}</div></div>`;
+}
+const phoneShell = (icon, title, sub, inner, opts = {}) => `
+  <div class="status"><span>11:42</span><span class="notch"></span><span>5G ▮▮▮ 87%</span></div>
+  <div class="appbar"><span class="back">‹</span><div class="av">${icon}</div><div><b>${title}</b><small>${sub}</small></div></div>${inner}`;
+const panel = (eyebrow, title, one, kpis, steps, prod) => `
+  <div class="eyebrow">${eyebrow}</div><h2>${title}</h2><p class="one">${one}</p>
+  <div class="kpis">${kpis.map(([a, b]) => `<div class="kpi"><b>${a}</b>${b}</div>`).join('')}</div>
+  <h3>How it works</h3><ol class="steps">${steps.map((s) => `<li><span>${s}</span></li>`).join('')}</ol>
+  <div class="prod"><b>In production:</b> ${prod}</div>`;
+const now = () => { const d = new Date(); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+// ---------- feature 1: WhatsApp AI nutrition assistant (deterministic) ----------
+function parseAsk(text) {
+  const t = text.toLowerCase();
+  const protein = +(t.match(/(\d{2,3})\s*g(?:m|rams?)?\s*(?:more\s*)?(?:of\s*)?protein/)?.[1] || t.match(/protein[^\d]{0,15}(\d{2,3})/)?.[1] || 0);
+  const budget = +(t.match(/(?:under|below|within|budget|max)\D{0,6}(?:₹|rs\.?\s*)?(\d{3,4})/)?.[1] // "under ₹300"
+    || t.match(/(?:₹|rs\.?\s*)?(\d{3,4})\s*(?:rs|rupees?)?\s*(?:ke andar|tak|se kam|ke neeche)/)?.[1] // Hindi puts it after: "300 ke andar"
+    || t.match(/(?:₹|rs\.?\s*)(\d{3,4})/)?.[1] || 0);
+  const kcal = +(t.match(/(?:under|below)\s*(\d{3,4})\s*(?:kcal|cal)/)?.[1] || 0);
+  const avoid = Object.entries(ALLERGEN_WORDS).filter(([, ws]) => ws.some((w) => new RegExp(`(allerg|no |without |avoid |nahi|not )[^.]{0,25}${w}|${w}[^.]{0,12}(allerg|nahi|free)`).test(t))).map(([a]) => a);
+  const veg = /\bveg(etarian)?\b|shakahari/.test(t) && !/non[- ]?veg/.test(t);
+  return { protein, budget, kcal, avoid, veg };
+}
+function recommend(q) {
+  let list = MENU.filter((m) => !m.allergens.some((a) => q.avoid.includes(a)));
+  if (q.veg) list = list.filter((m) => m.veg);
+  if (q.budget) list = list.filter((m) => m.price <= q.budget);
+  if (q.kcal) list = list.filter((m) => m.kcal <= q.kcal);
+  // meals that meet the protein goal first, then best protein per rupee
+  list.sort((a, b) => (q.protein ? (b.protein >= q.protein) - (a.protein >= q.protein) : 0) || b.protein / b.price - a.protein / a.price);
+  return list.slice(0, 3);
+}
+const chat = { log: [], cart: null };
+function botSay(html) { chat.log.push({ who: 'bot', html, t: now() }); renderChat(); }
+function userSay(text) {
+  chat.log.push({ who: 'me', html: esc(text), t: now() });
+  const q = parseAsk(text);
+  const t = text.toLowerCase();
+  if (chat.cart && /^(yes|haan|ha|confirm|ok|okay|place it|yes please)\b/.test(t)) {
+    const m = byId[chat.cart];
+    chat.cart = null;
+    botSay(`✅ <b>Ordered!</b> ${esc(m.name)} · ₹${m.price}\nArriving in ~25 min from ${m.kitchen}.\n\n🧾 Macro receipt: <b>${m.protein} g protein</b> · ${m.kcal} kcal${m.allergens.length ? '' : ' · allergen-safe ✓'}`);
+    return;
+  }
+  if (!q.protein && !q.budget && !q.avoid.length && !q.veg && !q.kcal && !/protein|lunch|dinner|eat|khana|suggest|order|meal|hungry|bhook/.test(t)) {
+    botSay('I can suggest meals from today\'s menu. Tell me a protein goal, a budget, or anything you avoid, e.g. "40 g protein, no peanuts, under ₹300".');
+    return;
+  }
+  const picks = recommend(q);
+  const said = [q.protein && `${q.protein} g+ protein`, q.veg && 'veg', q.budget && `under ₹${q.budget}`, q.kcal && `under ${q.kcal} kcal`, q.avoid.length && `no ${q.avoid.join(', ')}`].filter(Boolean).join(' · ');
+  if (!picks.length) { botSay(`Nothing on today's menu matches ${said}. Want me to relax the budget, or show the closest options?`); return; }
+  const removed = q.avoid.length ? MENU.filter((m) => m.allergens.some((a) => q.avoid.includes(a))).map((m) => m.name) : [];
+  botSay(`Here's what fits${said ? ` <b>(${said})</b>` : ''}:${picks.map((m) => mealCard(m, `<button class="btn sm" data-order="${m.id}">Order</button>`)).join('')}${removed.length ? `\n⚠️ Skipped for your allergy: ${removed.map(esc).join(', ')}` : ''}`);
+}
+function renderChat() {
+  const box = $('#chatbox'); if (!box) return;
+  box.innerHTML = '<div class="day">TODAY</div>' + chat.log.map((m) => `<div class="msg ${m.who}">${m.html}<span class="time">${m.t}</span></div>`).join('');
+  box.scrollTop = box.scrollHeight;
+}
+function viewAssistant() {
+  if (!chat.log.length) chat.log.push({ who: 'bot', html: 'Hi! I\'m the freH nutrition assistant 🥗\nTell me your goal and anything you avoid, and I\'ll pick from today\'s menu.', t: now() });
+  return {
+    phone: phoneShell('f', 'freH', 'AI nutrition assistant · online', `
+      <div class="body wa" id="chatbox" aria-live="polite"></div>
+      <div class="chips">${['I need 40 g more protein, allergic to peanuts', 'veg lunch under ₹250', 'post workout, high protein, no dairy', '300 ke andar veg protein'].map((c) => `<button class="chip" data-ask="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <form class="compose" id="compose"><input id="ask" placeholder="Message" aria-label="Message" autocomplete="off"><button class="send" type="submit" aria-label="Send">➤</button></form>`),
+    why: panel('Feature 05 · WhatsApp', 'AI nutrition assistant', 'Goal- and allergen-aware picks from the live menu, ordered right inside WhatsApp.',
+      [['Orders via WhatsApp', 'new channel'], ['Conversion', 'vs the app']],
+      ['The customer types a goal in plain words, in English or Hinglish.', 'Allergens are filtered in code first. "Peanut" also catches satay and moongfali.', 'It ranks by the protein goal, then protein per rupee, and shows price and macros.', 'It never orders without a "yes", then sends a macro receipt.'],
+      'freH\'s live menu with its macro and allergen data, a language model only to understand the message, and the WhatsApp Business API for chat and payment.'),
+    mount() {
+      renderChat();
+      const send = (text) => { if (!text.trim()) return; userSay(text.trim()); };
+      $('#compose').onsubmit = (e) => { e.preventDefault(); send($('#ask').value); $('#ask').value = ''; };
+      document.querySelectorAll('[data-ask]').forEach((b) => (b.onclick = () => send(b.dataset.ask)));
+      $('#chatbox').onclick = (e) => {
+        const id = e.target.closest('[data-order]')?.dataset.order; if (!id) return;
+        const m = byId[id]; chat.cart = id;
+        chat.log.push({ who: 'me', html: `Order ${esc(m.name)}`, t: now() });
+        botSay(`Just to confirm: <b>1 × ${esc(m.name)}</b>, ₹${m.price} (free delivery above ₹249).\nReply "yes" to place it.`);
+      };
+    },
+  };
+}
+
+// ---------- feature 2: office lunch train ----------
+const train = { started: false, joined: [], cutoff: 30 * 60, timer: null };
+const COLLEAGUES = [['Aditi', 'paneer'], ['Rohan', 'chicken'], ['Meera', 'tofu'], ['Karan', 'egg'], ['Sana', 'rajma'], ['Dev', 'fish'], ['Ishaan', 'chicken']];
+const AVC = ['#1f6b45', '#c9861a', '#3b6fb3', '#b0466b', '#6b4bb3', '#2e8a5c', '#a0522d', '#4a7d8c'];
+const FREE_AT = 1500;
+function viewTrain() {
+  const total = train.joined.reduce((s, [, id]) => s + byId[id].price, 0);
+  const mm = String(Math.floor(train.cutoff / 60)).padStart(2, '0'), ss = String(train.cutoff % 60).padStart(2, '0');
+  const frac = train.cutoff / 1800, C = 2 * Math.PI * 26;
+  const inner = !train.started ? `
+    <div style="text-align:center;padding:24px 8px">
+      <div style="font-size:64px">🚃</div>
+      <div class="h" style="font-size:20px">Start today's lunch train</div>
+      <p class="muted">Colleagues add their meals from one link until 12:00. Everything arrives in <b>one delivery</b> at 1:00.</p>
+      <button class="btn block" id="startTrain" style="margin-top:14px">Start the train</button>
+      <p class="muted" style="margin-top:12px">Free delivery above ₹${FREE_AT}</p>
+    </div>` : `
+    <div class="ringwrap">
+      <svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="var(--line)" stroke-width="6"/><circle cx="32" cy="32" r="26" fill="none" stroke="var(--green)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - frac)}" transform="rotate(-90 32 32)"/></svg>
+      <div><div class="muted">Departs in</div><div class="h" style="font-size:24px">${mm}:${ss}</div><div class="muted">freh.in/train/acme-labs · link shared ✓</div></div>
+    </div>
+    <div class="row" style="font-size:13px"><span>₹${total} of ₹${FREE_AT} for free delivery</span><b>${train.joined.length} on board</b></div>
+    <div class="progress" style="margin:7px 0 10px"><i style="width:${Math.min(100, (total / FREE_AT) * 100)}%"></i></div>
+    ${train.joined.map(([n, id], i) => `<div class="person"><div class="av" style="background:${AVC[i % AVC.length]}">${n[0]}</div><div style="flex:1;min-width:0"><b>${n}</b><div class="muted" style="font-size:12px">${byId[id].em} ${byId[id].name}</div></div><b>₹${byId[id].price}</b></div>`).join('')}
+    ${total >= FREE_AT ? '<div class="banner">🎉 Free delivery unlocked · one rider, one drop</div>' : ''}
+    <button class="btn ghost block" id="addOne" style="margin-top:12px" ${train.joined.length > COLLEAGUES.length ? 'disabled' : ''}>+ Simulate a colleague joining</button>`;
+  return {
+    phone: phoneShell('🚃', 'Lunch train', 'Acme Labs · HSR Layout', `<div class="body">${inner}</div>`),
+    why: panel('Feature 04 · B2B', 'The office "lunch train"', 'One person starts a group order and shares a link. Colleagues add meals before a cutoff. One delivery, free above a threshold.',
+      [['16 orders/week', 'from one office of 8, twice a week'], ['3+ accounts', 'the 3-month target']],
+      ['Someone starts the train at 11:30 and shares the link to the team\'s WhatsApp group.', 'Colleagues add meals until the cutoff; the bar shows how close they are to free delivery.', 'At cutoff the cart locks and the kitchen gets one combined ticket.', 'One rider, one drop. Company accounts get a monthly invoice.'],
+      'a shareable link, a cutoff job that locks the cart and sends one kitchen ticket, and monthly invoicing for company accounts.'),
+    mount() {
+      $('#startTrain') && ($('#startTrain').onclick = () => {
+        train.started = true; train.joined = [['You', 'paneer']];
+        clearInterval(train.timer);
+        train.timer = setInterval(() => { train.cutoff = Math.max(0, train.cutoff - 1); if (state.tab === 'train') softRender(); }, 1000);
+        render();
+      });
+      $('#addOne') && ($('#addOne').onclick = () => { const next = COLLEAGUES[train.joined.length - 1]; if (next) train.joined.push(next); render(); });
+    },
+  };
+}
+
+// ---------- feature 3: trainers prescribe meals ----------
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const plan = { role: 'trainer', meals: { Mon: 'chicken', Tue: 'paneer', Wed: 'fish', Thu: 'egg', Fri: 'chicken' }, ordered: false };
+const COMMISSION = 0.08;
+function viewTrainer() {
+  const items = DAYS.map((d) => byId[plan.meals[d]]);
+  const total = items.reduce((s, m) => s + m.price, 0), protein = items.reduce((s, m) => s + m.protein, 0);
+  const seg = `<div class="seg" role="group" aria-label="View as"><button aria-pressed="${plan.role === 'trainer'}" data-role="trainer">Trainer</button><button aria-pressed="${plan.role === 'client'}" data-role="client">Client</button></div>`;
+  const trainerView = `${seg}<div class="h">Plan for Priya</div><p class="muted" style="margin:0 0 10px">Goal: 40 g protein per lunch</p>
+    ${DAYS.map((d) => `<label class="daypick"><b>${d}</b><select data-day="${d}" aria-label="${d} meal">${MENU.map((m) => `<option value="${m.id}" ${m.id === plan.meals[d] ? 'selected' : ''}>${m.em} ${m.name} · ${m.protein} g</option>`).join('')}</select></label>`).join('')}
+    <div class="earn"><div class="row"><span style="opacity:.85;font-size:13px">Week: ₹${total} · ${protein} g protein</span></div><div class="row"><span>You earn</span><b>₹${Math.round(total * COMMISSION)}</b></div></div>
+    <button class="btn block" data-role="client">Send plan to Priya →</button>`;
+  const clientView = `${seg}<div class="h">Coach Arjun sent your week 💪</div><p class="muted" style="margin:0 0 4px">${protein} g protein across 5 lunches</p>
+    ${DAYS.map((d) => mealCard(byId[plan.meals[d]], `<span class="tag">${d}</span>`)).join('')}
+    ${plan.ordered ? `<div class="banner">✅ 5 lunches booked · ₹${total} · arrives 1 pm daily</div>` : `<button class="btn block" id="orderWeek" style="margin-top:12px">Order the whole week · ₹${total}</button>`}`;
+  return {
+    phone: phoneShell('🏋️', 'Trainer plans', plan.role === 'trainer' ? 'Coach Arjun · FitHub HSR' : 'Priya · client', `<div class="body">${plan.role === 'trainer' ? trainerView : clientView}</div>`),
+    why: panel('Idea 03 · Partners', 'Trainers "prescribe" meals', 'A trainer builds a weekly plan inside freH, the client orders it in one tap, and the trainer earns on every order.',
+      [['5 → 15–20', 'trainer partners'], ['Weekly plans', 'built-in repeat']],
+      ['The trainer picks a meal for each day against the client\'s protein goal.', 'The plan goes to the client as one link.', 'The client books the whole week in one tap.', `The trainer earns a commission (${Math.round(COMMISSION * 100)}% in this demo) on every order.`],
+      'trainer codes, plan links over WhatsApp, and a monthly payout report per trainer.'),
+    mount() {
+      document.querySelectorAll('[data-role]').forEach((b) => (b.onclick = () => { plan.role = b.dataset.role; render(); }));
+      document.querySelectorAll('[data-day]').forEach((s) => (s.onchange = () => { plan.meals[s.dataset.day] = s.value; plan.ordered = false; render(); }));
+      $('#orderWeek') && ($('#orderWeek').onclick = () => { plan.ordered = true; render(); });
+    },
+  };
+}
+
+// ---------- feature 4: macro receipt + monthly Wrapped ----------
+const HISTORY = ['chicken', 'paneer', 'chicken', 'fish', 'paneer', 'egg', 'chicken', 'smoothie', 'paneer', 'chicken', 'tofu', 'fish', 'chicken', 'paneer', 'egg', 'chicken', 'rajma', 'paneer', 'chicken', 'fish', 'paneer', 'chicken'];
+const card = { view: 'receipt', shared: false };
+function viewCards() {
+  const last = byId['chicken'];
+  const counts = HISTORY.reduce((o, id) => ((o[id] = (o[id] || 0) + 1), o), {});
+  const fav = byId[Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]];
+  const protein = HISTORY.reduce((s, id) => s + byId[id].protein, 0);
+  const seg = `<div class="seg" role="group" aria-label="Card"><button aria-pressed="${card.view === 'receipt'}" data-card="receipt">Macro receipt</button><button aria-pressed="${card.view === 'wrapped'}" data-card="wrapped">October Wrapped</button></div>`;
+  const receipt = `<div class="card-r"><div style="opacity:.85;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase">freH · macro receipt</div>
+      <div style="margin:12px 0 4px;font-size:15px">${last.em} ${last.name}</div>
+      <div class="big">${last.protein}g</div><div style="opacity:.85">protein in one lunch</div>
+      <div class="grid3"><div><b>${last.kcal}</b>kcal</div><div><b>${last.carbs} g</b>carbs</div><div><b>${last.fat} g</b>fat</div></div>
+      <div style="margin-top:14px;font-size:12.5px;line-height:1.7">✓ allergen-safe for you<br>✓ kitchen audited ${last.audit}<br>✓ 0 seed oils</div>
+      <div style="margin-top:12px;font-size:12px;opacity:.8">freh.in/r/PRIYA100</div></div>`;
+  const wrapped = `<div class="card-w">
+      <div class="blob" style="width:220px;height:220px;right:-70px;top:-60px;background:#1f6b45"></div>
+      <div class="blob" style="width:160px;height:160px;left:-50px;bottom:40px;background:#c9861a;opacity:.85"></div>
+      <div class="blob" style="width:90px;height:90px;right:30px;bottom:-20px;background:#7fbf98"></div>
+      <div style="opacity:.8;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase">your freH · October Wrapped</div>
+      <div><div class="big">${HISTORY.length}</div><div>meals you didn't have to think about</div></div>
+      <div><div class="big">${(protein / 1000).toFixed(1)}<span style="font-size:28px"> kg</span></div><div>of protein</div></div>
+      <div><div style="font-size:21px;font-weight:800">${fav.em} ${fav.name}</div><div style="opacity:.8">your #1, ${counts[fav.id]} times</div></div>
+      <div style="margin-top:auto;font-size:12px;opacity:.75">freh.in/r/PRIYA100</div></div>`;
+  return {
+    phone: phoneShell('📸', 'Share cards', 'made automatically after every order', `<div class="body">${seg}${card.view === 'receipt' ? receipt : wrapped}
+      <button class="btn block" id="share" style="margin-top:12px">${card.shared ? '✓ Shared to your story' : 'Share to Instagram story'}</button>
+      ${card.shared ? '<p class="muted" style="text-align:center">Shared with referral code PRIYA100 (demo)</p>' : ''}</div>`),
+    why: panel('Idea 01 · Reach', 'Macro receipts + monthly Wrapped', 'A shareable macro card for every order, and a Spotify-Wrapped-style recap every month.',
+      [['Free reach', 'from real customers'], ['Referral signups', 'code on every card']],
+      ['Every order produces a macro receipt automatically.', 'Each month, a Wrapped card sums up meals, protein and the favourite dish.', 'Both are made to be posted to Instagram stories.', 'Every card carries the customer\'s referral code, so a share can become a tracked signup.'],
+      `cards rendered from real order data (here, a sample history of ${HISTORY.length} orders), with share links tagged per customer.`),
+    mount() {
+      document.querySelectorAll('[data-card]').forEach((b) => (b.onclick = () => { card.view = b.dataset.card; card.shared = false; render(); }));
+      $('#share').onclick = () => { card.shared = true; render(); };
+    },
+  };
+}
+
+// ---------- feature 5: habit-timed reorder nudge ----------
+const ORDERS = [['Mon', '12:40', 'paneer'], ['Wed', '12:55', 'paneer'], ['Mon', '12:35', 'paneer'], ['Thu', '13:10', 'chicken'], ['Mon', '12:50', 'paneer'], ['Wed', '12:45', 'paneer']];
+const nudge = { sent: false, ordered: false };
+function viewNudge() {
+  const byDay = ORDERS.reduce((o, [d]) => ((o[d] = (o[d] || 0) + 1), o), {});
+  const day = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0][0];
+  const onDay = ORDERS.filter(([d]) => d === day);
+  const mins = onDay.map(([, t]) => +t.split(':')[0] * 60 + +t.split(':')[1]);
+  const avg = Math.round(mins.reduce((a, b) => a + b, 0) / mins.length);
+  const send = avg - 85; // ~85 min before their usual order time
+  const fmt = (m) => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`;
+  const usual = byId[Object.entries(onDay.reduce((o, [, , id]) => ((o[id] = (o[id] || 0) + 1), o), {})).sort((a, b) => b[1] - a[1])[0][0]];
+  return {
+    phone: phoneShell('⏰', 'Reorder nudge', 'timed to each customer', `<div class="body">
+      <div class="h">Priya's last 6 orders</div>
+      <div class="hist" style="margin:8px 0 12px">${ORDERS.map(([d, t, id]) => `<div class="${d === day ? 'hit' : ''}"><span>${d}</span><span>${t}</span><span>${byId[id].em} ${byId[id].name}</span></div>`).join('')}</div>
+      <div class="banner" style="margin-top:0">📈 Usually <b>${day}</b> around <b>${fmt(avg)}</b> → nudge at <b>${fmt(send)}</b></div>
+      ${nudge.sent ? `<div class="notif"><div class="top"><span class="wa-ic">✆</span>WhatsApp · freH<span style="margin-left:auto">${day} ${fmt(send)}</span></div>
+          <div style="margin:8px 0 10px;font-size:14px">It's ${day} again 🙂 Your usual <b>${esc(usual.name)}</b> (₹${usual.price})?</div>
+          ${nudge.ordered ? '<div class="banner" style="margin:0">✅ Ordered in one tap · arrives 12:45</div>' : '<div style="display:flex;gap:8px"><button class="btn sm" id="usual">Order my usual</button><button class="btn ghost sm" id="skip">Not today</button></div>'}</div>`
+        : `<button class="btn block" id="sendNudge" style="margin-top:12px">Preview the ${day} ${fmt(send)} nudge</button>`}
+    </div>`),
+    why: panel('Feature 03 · Repeat', 'Habit-timed reorder nudges', 'Not "we miss you" blasts: one nudge, sent just before the time each person usually orders, with their usual meal pre-filled.',
+      [['30-day repeat', '→ 35% target'], ['1 tap', 'to reorder']],
+      ['Find the day this person orders most.', 'Average their order time on that day.', 'Pick their most common meal on that day.', 'Send the nudge about 85 minutes before, at most once a day.'],
+      'a daily job over order history, a holdout group to measure the lift, and a cap of one nudge per person per day.'),
+    mount() {
+      $('#sendNudge') && ($('#sendNudge').onclick = () => { nudge.sent = true; render(); });
+      $('#usual') && ($('#usual').onclick = () => { nudge.ordered = true; render(); });
+      $('#skip') && ($('#skip').onclick = () => { nudge.sent = false; render(); });
+    },
+  };
+}
+
+// ---------- shell ----------
+const TABS = [
+  ['assistant', '💬', 'AI nutrition assistant', 'WhatsApp, allergen-safe', viewAssistant],
+  ['train', '🚃', 'Office lunch train', 'group orders, one delivery', viewTrain],
+  ['trainer', '🏋️', 'Trainers prescribe', 'one-tap weekly plans', viewTrainer],
+  ['cards', '📸', 'Receipts + Wrapped', 'shareable cards', viewCards],
+  ['nudge', '⏰', 'Reorder nudge', 'timed to each habit', viewNudge],
+];
+const state = { tab: TABS.some((x) => x[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'assistant' };
+// demo hook for screenshots / sharing a tab: #assistant-demo plays two sample messages
+if (location.hash === '#assistant-demo') setTimeout(() => { userSay('I need 40 g more protein, allergic to peanuts'); }, 50);
+function render() {
+  $('#nav').innerHTML = TABS.map(([id, ic, t, s]) => `<button class="tab" role="tab" aria-selected="${state.tab === id}" data-tab="${id}"><span class="ic">${ic}</span><span><b>${t}</b><span>${s}</span></span></button>`).join('');
+  document.querySelectorAll('[data-tab]').forEach((b) => (b.onclick = () => { state.tab = b.dataset.tab; render(); }));
+  const v = TABS.find((t) => t[0] === state.tab)[4]();
+  $('#main').innerHTML = `<div class="stage"><div class="phone"><div class="screen">${v.phone}</div></div><div class="why">${v.why}</div></div>`;
+  v.mount();
+}
+// re-render only the phone for the ticking timer
+function softRender() { const v = viewTrain(); const s = $('.screen'); if (s) { s.innerHTML = v.phone; v.mount(); } }
+render();
+</script>
+</body>
+</html>

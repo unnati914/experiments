@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saved Evals Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fbfcff; --card:#fff; --ink:#1e2a3b; --soft:#6b7a90; --line:#e3e8f0; --sky:#3d8fd6; --skyBg:#e6f2fd; --mint:#1f8f6f; --mintBg:#e2f6ee; --lav:#7d62d3; --lavBg:#efeafc; --red:#c9584c; --redBg:#fdeceb; --amber:#b7791f; --amberBg:#fdf3e1; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Nunito','Noto Sans Devanagari',system-ui,sans-serif; line-height:1.45; }
+  body::before { content:''; position:fixed; inset:0; z-index:-1; background:
+    radial-gradient(600px 500px at 0% 0%, var(--skyBg), transparent 70%),
+    radial-gradient(600px 500px at 100% 10%, var(--lavBg), transparent 70%),
+    radial-gradient(700px 600px at 90% 100%, var(--mintBg), transparent 70%); }
+  .wrap { max-width:1120px; margin:0 auto; padding:40px 20px 60px; }
+  .mono { font-family:'IBM Plex Mono',monospace; font-weight:500; letter-spacing:.08em; }
+  .eyebrow { display:inline-block; background:var(--lavBg); color:var(--lav); border-radius:999px; padding:6px 14px; font-size:13px; }
+  h1 { font-size:clamp(30px,5vw,48px); font-weight:900; line-height:1.1; margin:16px 0 10px; }
+  h1 span { color:var(--lav); }
+  .lede { color:var(--soft); font-size:18px; max-width:760px; margin:0; }
+  section { margin-top:44px; }
+  h2 { font-size:26px; font-weight:900; margin:0 0 4px; display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
+  h2 .mono { color:var(--lav); font-size:16px; }
+  .hint { color:var(--soft); margin:0 0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:0 10px 30px rgba(30,42,59,.05); }
+  .chip { display:inline-block; border-radius:999px; padding:3px 10px; font-size:12px; font-weight:800; white-space:nowrap; }
+  .pass { background:var(--mintBg); color:var(--mint); } .fail { background:var(--redBg); color:var(--red); }
+  .new { background:var(--amberBg); color:var(--amber); }
+  .lang { background:var(--skyBg); color:var(--sky); }
+  .stats { display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }
+  .stat { padding:14px 20px; } .stat b { display:block; font-size:30px; font-weight:900; } .stat small { color:var(--soft); font-weight:700; }
+
+  .main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:16px; }
+  .list { padding:8px; max-height:560px; overflow:auto; }
+  .row { width:100%; display:grid; grid-template-columns:30px 1fr auto; gap:10px; align-items:center; text-align:left; background:none; border:0; border-radius:12px; padding:10px; font:inherit; color:inherit; cursor:pointer; }
+  .row:hover { background:var(--bg); } .row[aria-current="true"] { background:var(--skyBg); }
+  .row .n { color:var(--soft); font-size:13px; } .row .t { font-weight:800; } .row .a { color:var(--soft); font-size:13px; }
+  .detail { padding:22px; }
+  .bubble { border-radius:16px; padding:12px 16px; margin:10px 0; max-width:92%; }
+  .bubble small { display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; color:var(--soft); margin-bottom:4px; }
+  .user { background:var(--skyBg); } .agent { background:var(--bg); border:1px solid var(--line); margin-left:auto; } .human { background:var(--lavBg); margin-left:auto; }
+  .agent.bad { border-color:#f3c5bf; } .agent.good { background:var(--mintBg); border-color:transparent; }
+  .why { font-size:15px; color:var(--soft); margin-top:12px; }
+  .testbox { margin-top:16px; padding:12px 14px; border-radius:14px; background:var(--amberBg); font-size:14px; }
+
+  .langs { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .lg { padding:18px 20px; } .lg h3 { margin:0; font-size:20px; } .lg .rate { font-size:40px; font-weight:900; }
+  .barbg { height:12px; border-radius:999px; background:var(--bg); border:1px solid var(--line); overflow:hidden; margin:8px 0; }
+  .bar { height:100%; background:var(--red); border-radius:999px; }
+  .lg ul { margin:8px 0 0; padding-left:18px; color:var(--soft); font-size:14px; }
+
+  .prs { display:grid; gap:14px; }
+  .pr { padding:18px 20px; }
+  .pr header { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; }
+  .pr h3 { margin:0; font-size:19px; } .pr .src { color:var(--soft); font-size:14px; margin-top:4px; }
+  .pr code { font-family:'IBM Plex Mono',monospace; font-size:13px; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; display:block; margin-top:10px; white-space:pre-wrap; }
+  .grid12 { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+  .dot { width:44px; text-align:center; border-radius:10px; padding:5px 0; font-size:12px; font-weight:800; }
+  .dot.p { background:var(--mintBg); color:var(--mint); } .dot.f { background:var(--redBg); color:var(--red); }
+  .dot.fixed { outline:2px solid var(--mint); } .dot.broke { outline:2px solid var(--red); }
+  .verdict { margin-top:12px; font-weight:800; }
+  .btn { font:inherit; font-weight:800; border:0; border-radius:999px; padding:10px 18px; background:var(--lav); color:#fff; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:default; }
+
+  .sims { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+  .sim { padding:16px 18px; } .sim h3 { margin:0 0 6px; font-size:17px; }
+  .foot { margin-top:48px; color:var(--soft); font-size:13px; text-align:center; }
+  @media (max-width:820px) { .main, .langs { grid-template-columns:1fr; } .list { max-height:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow mono">DEMO · SAMPLE DATA · IDEAS FOR AGNOST AI</span>
+  <h1>Evals that remember: <span>12 chats</span> → 12 saved tests</h1>
+  <p class="lede">A made-up support agent for a fictional food-delivery app answers 12 chats in English, Hindi and Hinglish. Every chat becomes a saved test. Each pull request has to pass all of them before it can be merged.</p>
+  <div class="stats" id="stats"></div>
+
+  <section>
+    <h2><span class="mono">01</span>Every chat becomes a saved test</h2>
+    <p class="hint">Click a chat. Failed chats show why they failed, and the test that was saved from them.</p>
+    <div class="main">
+      <div class="card list" id="list"></div>
+      <div class="card detail" id="detail" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="mono">02</span>Failures grouped by language</h2>
+    <p class="hint">Same agent, same questions. It fails much more often in Hindi and Hinglish.</p>
+    <div class="langs" id="langs"></div>
+  </section>
+
+  <section>
+    <h2><span class="mono">03</span>A gate on every pull request</h2>
+    <p class="hint">Each proposed fix runs all 12 saved tests. <span class="chip pass">green ring</span> = fixed, <span class="chip fail">red ring</span> = broke a test that passed before.</p>
+    <div class="prs" id="prs"></div>
+  </section>
+
+  <section>
+    <h2><span class="mono">04</span>Test with fake users, before shipping</h2>
+    <p class="hint">After both good fixes are merged, the agent talks to made-up users who never wrote in yet.</p>
+    <button class="btn" id="simBtn">Run 4 fake users</button>
+    <div class="sims" id="sims" style="margin-top:14px"></div>
+  </section>
+
+  <p class="foot">Built by Unnati Chhabra · unnati-chhabra.xyz · Sample chats written to show each idea, not a run on Agnost or any real app · Not affiliated with Agnost AI</p>
+</div>
+
+<script>
+// Each chat: what the user wrote, what the agent said, and what it should do (the saved test).
+// before = result today; fixedBy = the pull request that fixes it; brokenBy = a PR that makes a passing test fail.
+const CHATS = [
+  { id:1, lang:'English', title:'Where is my order?', user:'Where is my order?', agent:'Your order is 6 minutes away. Rider: Aman.', pass:true, test:'Gives live order status.' },
+  { id:2, lang:'English', title:'Change the address', user:'Can I change my delivery address?', agent:'Your order is already picked up, so I can’t change the address. I can call the rider for you.', pass:true, test:'Explains why, offers a next step.' },
+  { id:3, lang:'English', title:'Coupon SAVE50', user:'Apply coupon SAVE50', agent:'Done. ₹50 off, new total ₹310.', pass:true, test:'Applies a valid coupon and shows the total.' },
+  { id:4, lang:'English', title:'Charged twice', user:'I was charged twice for one order.', agent:'Sorry, I can’t help with payments. Connecting you to a human agent.', pass:false, why:'Agent gave up and handed off.', human:'I can see two charges of ₹420. The extra one is refunded automatically in 5–7 working days. Your refund ID is R-8841.', fixed:'I can see two charges of ₹420. The extra one is refunded in 5–7 working days. Your refund ID is R-8841.', test:'Duplicate charge → find both payments, share refund ID and 5–7 days.', fixedBy:'A' },
+  { id:5, lang:'Hindi', title:'मेरा ऑर्डर कहाँ है?', user:'मेरा ऑर्डर कहाँ है?', agent:'आपका ऑर्डर 8 मिनट में पहुँच जाएगा।', pass:true, test:'Order status, answered in Hindi.', brokenBy:'C', broken:'Your order will arrive in 8 minutes.' },
+  { id:6, lang:'Hindi', title:'ऑर्डर कैंसल करना है', user:'ऑर्डर कैंसल करना है', agent:'आपका ऑर्डर अभी बना नहीं था, इसलिए कैंसल कर दिया है। पूरा पैसा वापस आएगा।', pass:true, test:'Cancels before cooking, full refund, in Hindi.', brokenBy:'C', broken:'Your order is cancelled. Full refund.' },
+  { id:7, lang:'Hindi', title:'खाना ठंडा आया', user:'खाना ठंडा आया, पैसे वापस चाहिए', agent:'Sorry, I didn’t understand. Please describe your issue.', pass:false, why:'Did not understand Hindi. Replied in English.', fixed:'माफ़ कीजिए। ठंडे खाने के लिए ₹180 वापस कर दिए हैं, 2 दिन में आ जाएँगे।', test:'Cold food complaint in Hindi → refund, reply in Hindi.', fixedBy:'B' },
+  { id:8, lang:'Hindi', title:'राइडर ने बदतमीज़ी की', user:'डिलीवरी वाले ने बदतमीज़ी की', agent:'Please rate your rider in the app.', pass:false, why:'Ignored a complaint about the rider.', fixed:'माफ़ कीजिए, ऐसा नहीं होना चाहिए था। आपकी शिकायत दर्ज हो गई है, टिकट T-2207। 24 घंटे में हमारी टीम आपसे बात करेगी।', test:'Rider complaint → log a ticket, reply in Hindi.', fixedBy:'B' },
+  { id:9, lang:'Hinglish', title:'order kab tak aayega?', user:'order kab tak aayega?', agent:'Aapka order 10 min mein pahunch jayega.', pass:true, test:'Order status, answered in Hinglish.', brokenBy:'C', broken:'Your order will arrive in 10 minutes.' },
+  { id:10, lang:'Hinglish', title:'paise kat gaye, order nahi hua', user:'paise kat gaye but order place nahi hua', agent:'Your order was placed successfully!', pass:false, why:'Wrong. No order exists for this payment.', fixed:'Order place nahi hua, par ₹350 kat gaye. Refund shuru ho gaya hai, 5–7 din mein aa jayega. Refund ID R-9113.', test:'Payment taken, no order → refund ID and 5–7 days.', fixedBy:'A' },
+  { id:11, lang:'Hinglish', title:'raita nahi aaya', user:'item missing tha, raita nahi aaya', agent:'Sure! Which item would you like to order?', pass:false, why:'Read “missing” as a new order.', fixed:'Sorry! Raita ke liye ₹40 wapas kar diye hain.', test:'Missing item → refund that item, in Hinglish.', fixedBy:'B' },
+  { id:12, lang:'Hinglish', title:'refund ka status batao', user:'bhai refund ka status batao', agent:'Hello! How can I help you today?', pass:false, why:'Ignored the question.', fixed:'Aapka ₹220 ka refund kal process ho gaya. 2 din mein bank mein dikh jayega.', test:'Refund status, in Hinglish.', fixedBy:'B' },
+];
+const PRS = [
+  { key:'A', title:'Answer duplicate and failed payments', src:'Learned from the human handoff in chat 04. The human checked both payments and shared the refund ID; the agent now does the same.', diff:'+ If the user says they were charged twice, or money was taken with no order:\n+   look up payments for the order, share the refund ID, and say "5–7 working days".' },
+  { key:'B', title:'Reply in the user’s language, and understand Hindi / Hinglish complaints', src:'From the 5 failures in Hindi and Hinglish (section 02).', diff:'+ Always reply in the language the user wrote in (English, Hindi or Hinglish).\n+ Words like "paise wapas", "nahi aaya", "बदतमीज़ी" mean a complaint or refund request.' },
+  { key:'C', title:'Shorter prompt: always reply in English', src:'A cost-saving change. It fixes chat 12, but breaks three chats that worked before.', diff:'- Always reply in the language the user wrote in.\n+ Always reply in English.', alsoFixes:[12] },
+];
+const SIMS = [
+  { who:'Angry user, Hindi', msg:'तीसरी बार बोल रहा हूँ, मेरा रिफंड कहाँ है??', reply:'माफ़ कीजिए कि आपको बार-बार लिखना पड़ा। आपका ₹220 का रिफंड कल प्रोसेस हो गया, 2 दिन में दिख जाएगा।', pass:true },
+  { who:'Confused user', msg:'my order... it said cancelled?? but then delivered?? do i pay', reply:'Your order was delivered and paid for. The “cancelled” message was for an older order. You don’t need to pay again.', pass:true },
+  { who:'Hinglish with typos', msg:'refnd kb aaega yaar', reply:'Aapka refund 5–7 din mein aa jayega. Refund ID R-9113.', pass:true },
+  { who:'Hinglish, voice note text', msg:'haan toh bola na maine ki dal mein namak zyada tha, kuch karo', reply:'Kya aap apna order number bata sakte hain?', pass:false, note:'Too-salty food is a complaint, but the agent asked for an order number it already has. Saved as new test 13, before any real user hit it.' },
+];
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const pad = (n) => String(n).padStart(2, '0');
+const merged = new Set();
+let cur = 3, simsRun = false;
+
+// Result of a test after a set of merged PRs (or one proposed PR on top).
+function result(c, prs) {
+  if (c.brokenBy && prs.has(c.brokenBy)) return false;
+  if (c.pass) return true;
+  if (prs.has(c.fixedBy)) return true;
+  return PRS.some((p) => prs.has(p.key) && (p.alsoFixes || []).includes(c.id));
+}
+const passCount = (prs) => CHATS.filter((c) => result(c, prs)).length;
+
+function renderStats() {
+  const tests = 12 + (simsRun ? 1 : 0);
+  document.getElementById('stats').innerHTML = [
+    [`${passCount(merged)} / 12`, 'tests passing'],
+    [`${tests}`, 'saved tests'],
+    [`${merged.size}`, 'fixes merged'],
+    [`${PRS.filter((p) => p.blocked).length}`, 'fixes blocked'],
+  ].map(([b, s]) => `<div class="card stat"><b>${b}</b><small>${s}</small></div>`).join('');
+}
+
+function renderChats() {
+  document.getElementById('list').innerHTML = CHATS.map((c, i) => {
+    const ok = result(c, merged);
+    return `<button class="row" data-i="${i}" aria-current="${i === cur}">
+      <span class="n mono">${pad(c.id)}</span>
+      <span><span class="t">${esc(c.title)}</span><br><span class="a">${c.lang}${!c.pass && ok ? ' · fixed' : ''}</span></span>
+      <span class="chip ${ok ? 'pass' : 'fail'}">${ok ? 'PASS' : 'FAIL'}</span></button>`;
+  }).join('');
+  const c = CHATS[cur], ok = result(c, merged);
+  const reply = !c.pass && ok ? c.fixed : c.agent;
+  document.getElementById('detail').innerHTML = `
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:20px">${pad(c.id)} · ${esc(c.title)}</b><span class="chip lang">${c.lang}</span></div>
+    <div class="bubble user"><small>USER</small>${esc(c.user)}</div>
+    <div class="bubble agent ${ok ? (c.pass ? '' : 'good') : 'bad'}"><small>AGENT${!c.pass && ok ? ' · AFTER FIX' : ''}</small>${esc(reply)}</div>
+    ${c.human && !ok ? `<div class="bubble human"><small>HUMAN AGENT TAKES OVER</small>${esc(c.human)}</div>` : ''}
+    <div><span class="chip ${ok ? 'pass' : 'fail'}">${ok ? 'PASS' : 'FAIL'}</span>${!ok ? `<span class="why"> ${esc(c.why)}</span>` : ''}</div>
+    <div class="testbox"><span class="mono" style="font-size:11px;color:var(--amber)">SAVED TEST ${pad(c.id)}</span><br>${esc(c.test)}</div>`;
+  document.querySelectorAll('.row').forEach((b) => b.onclick = () => { cur = +b.dataset.i; renderChats(); });
+}
+
+function renderLangs() {
+  document.getElementById('langs').innerHTML = ['English', 'Hindi', 'Hinglish'].map((l) => {
+    const cs = CHATS.filter((c) => c.lang === l), fails = cs.filter((c) => !c.pass);
+    const pct = Math.round((fails.length / cs.length) * 100);
+    return `<div class="card lg"><h3>${l}</h3><div class="rate" style="color:${pct > 30 ? 'var(--red)' : 'var(--ink)'}">${pct}%</div>
+      <div class="barbg"><div class="bar" style="width:${pct}%"></div></div>
+      <small style="color:var(--soft);font-weight:700">${fails.length} of ${cs.length} chats failed</small>
+      <ul>${fails.map((c) => `<li>${pad(c.id)} · ${esc(c.why)}</li>`).join('')}</ul></div>`;
+  }).join('');
+}
+
+function renderPRs() {
+  document.getElementById('prs').innerHTML = PRS.map((p) => {
+    const after = new Set([...merged, p.key]);
+    const dots = CHATS.map((c) => {
+      const b = result(c, merged), a = result(c, after);
+      return `<span class="dot ${a ? 'p' : 'f'} ${!b && a ? 'fixed' : ''} ${b && !a ? 'broke' : ''}" title="Test ${pad(c.id)}">${pad(c.id)}</span>`;
+    }).join('');
+    const broke = CHATS.filter((c) => result(c, merged) && !result(c, after));
+    const fixed = CHATS.filter((c) => !result(c, merged) && result(c, after));
+    const done = merged.has(p.key);
+    p.blocked = broke.length > 0;
+    const verdict = done ? `<span class="chip pass">MERGED</span>`
+      : broke.length ? `<span class="chip fail">BLOCKED</span> Fixes ${fixed.length}, but breaks ${broke.map((c) => pad(c.id)).join(', ')}, which passed before.`
+      : `<span class="chip pass">ALL TESTS PASS</span> Fixes ${fixed.map((c) => pad(c.id)).join(', ')}. Nothing that passed before breaks.`;
+    return `<div class="card pr"><header><div><span class="mono" style="color:var(--lav);font-size:13px">PULL REQUEST ${p.key}</span><h3>${esc(p.title)}</h3></div>
+      ${!done && !broke.length ? `<button class="btn" data-merge="${p.key}">Merge</button>` : ''}</header>
+      <div class="src">${esc(p.src)}</div><code>${esc(p.diff)}</code>
+      <div class="grid12">${dots}</div><div class="verdict">${verdict}</div></div>`;
+  }).join('');
+  document.querySelectorAll('[data-merge]').forEach((b) => b.onclick = () => { merged.add(b.dataset.merge); renderAll(); });
+}
+
+function renderSims() {
+  const btn = document.getElementById('simBtn');
+  const ready = merged.has('A') && merged.has('B');
+  btn.disabled = !ready;
+  btn.textContent = ready ? 'Run 4 fake users' : 'Merge pull requests A and B first';
+  if (!simsRun) { document.getElementById('sims').innerHTML = ''; return; }
+  document.getElementById('sims').innerHTML = SIMS.map((s) => `<div class="card sim"><h3>${esc(s.who)}</h3>
+    <div class="bubble user"><small>FAKE USER</small>${esc(s.msg)}</div>
+    <div class="bubble agent ${s.pass ? 'good' : 'bad'}"><small>AGENT</small>${esc(s.reply)}</div>
+    <span class="chip ${s.pass ? 'pass' : 'fail'}">${s.pass ? 'PASS' : 'FAIL'}</span>
+    ${s.note ? `<div class="testbox"><span class="chip new">NEW TEST 13</span> ${esc(s.note)}</div>` : ''}</div>`).join('');
+}
+document.getElementById('simBtn').onclick = () => { simsRun = true; renderAll(); };
+
+function renderAll() { renderPRs(); renderStats(); renderChats(); renderLangs(); renderSims(); }
+renderAll();
+</script>
+</body>
+</html>
